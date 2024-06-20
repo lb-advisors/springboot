@@ -21,5 +21,4 @@ public class RoutesService implements IRoutes {
     public Optional<Routes> getRoute(int id) {
         return this.routesRepository.findById(id);
     }
-
 }
