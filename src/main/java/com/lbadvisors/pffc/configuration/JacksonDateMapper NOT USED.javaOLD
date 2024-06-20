@@ -1,0 +1,55 @@
+package com.lbadvisors.pffc.configuration;
+
+import java.time.format.DateTimeFormatter;
+
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
+@Configuration
+public class JacksonDateMapper {
+
+    /*
+     * @Bean
+     * public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+     * JsonMapper jsonMapper = new JsonMapper();
+     * jsonMapper.registerModule(new JavaTimeModule());
+     * // Additional configurations like enabling/disabling features
+     * // objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+     * return jsonMapper;
+     * }
+     */
+
+    /*
+     * @Bean
+     * public JsonMapper jsonMapper() {
+     * JsonMapper mapper = new JsonMapper();
+     * mapper.registerModule(new JavaTimeModule());
+     * return mapper;
+     * }
+     * 
+     * @Bean
+     * public MappingJackson2HttpMessageConverter
+     * mappingJackson2HttpMessageConverter() {
+     * Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()
+     * .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+     * .serializers(
+     * new
+     * LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
+     * ))
+     * .serializationInclusion(JsonInclude.Include.NON_NULL);
+     * return new MappingJackson2HttpMessageConverter(builder.build());
+     * }
+     */
+
+}
