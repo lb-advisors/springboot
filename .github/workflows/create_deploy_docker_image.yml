@@ -1,10 +1,9 @@
-name: Build Spring Boot JAR
+name: Docker image pushed to render.com
 
 on:
-  #  push:
-  #    branches:
-  #      - main
-  #      - develop
+  push:
+    branches:
+      - develop
   #  pull_request:
   #    branches:
   #      - main
@@ -58,8 +57,9 @@ jobs:
           name: spring-boot-app
           path: target/*.jar
 
+      # trigger render.com docker image deployment
       - name: Deploy to Render
         uses: fjogeleit/http-request-action@v1
         with:
-          url: "https://api.render.com/deploy/srv-cpq4dghu0jms73b8pkbg?key=2lwoVlVeFco"
+          url: ${{ secrets.RENDER_TRIGGER_URL }}
           method: "GET"
