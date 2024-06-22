@@ -43,3 +43,7 @@ jobs:
         with:
           name: spring-boot-app
           path: target/*.jar
+
+      - name: Build the Docker image
+      - uses: actions/checkout@v4      
+      - run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
