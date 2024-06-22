@@ -46,7 +46,7 @@ jobs:
         with:
           registry: ghcr.io
           username: oleblond-lb
-          password: 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
+          password: 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
 
       # to read: https://dev.to/onticdani/automatically-build-docker-images-with-github-actions-3n8e
       - name: Push the Docker image
