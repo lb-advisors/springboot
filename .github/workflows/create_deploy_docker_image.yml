@@ -1,4 +1,4 @@
-name: Build Spring Boot JAR
+name: Create docker image and push it to render.com
 
 on:
   push:
