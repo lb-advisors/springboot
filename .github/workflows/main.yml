@@ -57,3 +57,9 @@ jobs:
         with:
           name: spring-boot-app
           path: target/*.jar
+
+      - name: Deploy to Render
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "https://api.render.com/deploy/srv-cpq4dghu0jms73b8pkbg?key=2lwoVlVeFco"
+          method: "GET"
