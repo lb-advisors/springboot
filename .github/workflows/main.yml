@@ -46,8 +46,8 @@ jobs:
 
       - run: ls -d $PWD/*
 
-      - name: Checkout
-        uses: actions/checkout@v4  
+      #- name: Checkout
+      #  uses: actions/checkout@v4  
 
       - run: ls -d $PWD/*
       
