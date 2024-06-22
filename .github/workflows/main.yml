@@ -39,7 +39,7 @@ jobs:
         run: mvn clean install -DskipTests  
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag springboot-image:latest
+        run: docker build . --file Dockerfile --tag ghcr.io/lb-advisors/springboot:latest
 
       - name: Archive JAR file
         uses: actions/upload-artifact@v4
