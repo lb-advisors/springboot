@@ -61,5 +61,6 @@ jobs:
       - name: Deploy to Render
         uses: fjogeleit/http-request-action@v1
         with:
-          url: ${{ secrets.RENDER_TRIGGER_URL }}
+          url: "https://api.render.com/deploy/srv-cpq4dghu0jms73b8pkbg?key=2lwoVlVeFco"
+          #${{ secrets.RENDER_TRIGGER_URL }}
           method: "GET"
