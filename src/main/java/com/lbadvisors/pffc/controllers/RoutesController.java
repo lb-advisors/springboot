@@ -13,23 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lbadvisors.pffc.exception.ResourceNotFoundException;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/routes")
 public class RoutesController {
 
     @Autowired
     private RoutesService routesService;
 
-    @GetMapping("/hello")
-    public String sayHello() {
-        return "Hello world!";
-    }
-
-    @GetMapping(value = "/routes")
+    @GetMapping(value = "/")
     public List<Routes> getAllroutes() {
         return routesService.getAllRoutes();
     }
 
-    @GetMapping(value = "/routes/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<Routes> getRouteById(@PathVariable("id") int id) throws Exception {
 
         Routes route = routesService.getRoute(id)
