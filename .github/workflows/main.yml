@@ -44,7 +44,12 @@ jobs:
           name: spring-boot-app
           path: target/*.jar
 
+      - run: ls -d $PWD/*
+
       - name: Checkout
         uses: actions/checkout@v4  
+
+      - run: ls -d $PWD/*
+      
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
