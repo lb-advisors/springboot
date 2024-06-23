@@ -28,7 +28,7 @@ public class ErrorMessage {
     public ErrorMessage(int statusCode, String message, String description) {
         this.statusCode = statusCode;
         this.timestamp = Instant.now();
-        this.message = message + "Olivier";
+        this.message = message;
         this.description = description;
     }
 }
