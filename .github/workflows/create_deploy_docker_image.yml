@@ -60,8 +60,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          # not that this token is automatically created by Github
+          password: ${{ secrets.DOCKER_GH_TOKEN }}
 
       # to read: https://dev.to/onticdani/automatically-build-docker-images-with-github-actions-3n8e
       - name: Push the Docker image
