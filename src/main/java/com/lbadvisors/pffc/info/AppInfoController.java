@@ -1,5 +1,10 @@
 package com.lbadvisors.pffc.info;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +23,20 @@ public class AppInfoController {
     @GetMapping(value = "")
     public ResponseEntity<AppInfo> getAppInfo() {
 
+        // Parse UTC string to LocalDateTime
+        ZonedDateTime utcDateTime = ZonedDateTime.parse(env.getProperty("BUILT_TIME"),
+                DateTimeFormatter.ISO_INSTANT.withZone(java.time.ZoneOffset.UTC));
+
+        ZonedDateTime estDateTime = utcDateTime.withZoneSameInstant(ZoneId.of("America/New_York"));
+
+        // Define a formatter for the output format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss EST");
+
+        // Format LocalDateTime to human-readable string
+        String formattedDateTime = estDateTime.format(formatter);
+
         AppInfo appInfo = new AppInfo();
-        appInfo.builtTime = env.getProperty("BUILT_TIME");
+        appInfo.builtTime = formattedDateTime;
         appInfo.commitMessage = env.getProperty("COMMIT_MESSAGE");
         appInfo.commitHash = env.getProperty("COMMIT_HASH");
 
