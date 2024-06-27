@@ -24,7 +24,7 @@ public class AppInfoController {
     @GetMapping(value = "")
     public ResponseEntity<AppInfo> getAppInfo() {
 
-        String formattedDateTime = "";
+        String formattedDateTime = "N/A";
 
         try {
             Instant instant = Instant.parse(env.getProperty("BUILD_TIME"));
