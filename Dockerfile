@@ -8,10 +8,10 @@ COPY target/*.jar pffc.jar
 EXPOSE 8080
 ARG BUILT_TIME 'N/A'
 ENV BUILT_TIME=${BUILT_TIME}
-ARG COMMIT_MESSAGE 'N/A'
+ARG COMMIT_MESSAGE 'N/A'    
 ENV COMMIT_MESSAGE=${COMMIT_MESSAGE}
 ARG COMMIT_HASH 'N/A'
-ENV COMMIT_MESSAGE=${COMMIT_HASH}
+ENV COMMIT_HASH=${COMMIT_HASH}
 
 #ENTRYPOINT exec java $JAVA_OPTS -jar pffc.jar
 # For Spring-Boot project, use the entrypoint below to reduce Tomcat startup time.
