@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lbadvisors.pffc.exception.ResourceNotFoundException;
 
 @RestController
-@RequestMapping("/delivery_stops")
+@RequestMapping("/delivery-stops")
 public class DeliveryStopController {
 
     @Autowired
