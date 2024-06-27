@@ -49,11 +49,11 @@ jobs:
         run: echo "::set-output name=hash::$(git log -1 --pretty=%H)"
 
       - name: Get current time
-        id: built_time
+        id: build_time
         run: echo "::set-output name=time::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
       - name: Build the Docker image
-        run: docker build --file Dockerfile --tag ghcr.io/lb-advisors/springboot:latest --build-arg COMMIT_MESSAGE="${{ steps.commit_message.outputs.message }}" --build-arg COMMIT_HASH="${{ steps.commit_hash.outputs.hash }}" --build-arg BUILT_TIME="${{ steps.built_time.outputs.time }}" .
+        run: docker build --file Dockerfile --tag ghcr.io/lb-advisors/springboot:latest --build-arg COMMIT_MESSAGE="${{ steps.commit_message.outputs.message }}" --build-arg COMMIT_HASH="${{ steps.commit_hash.outputs.hash }}" --build-arg BUILD_TIME="${{ steps.build_time.outputs.time }}" .
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
