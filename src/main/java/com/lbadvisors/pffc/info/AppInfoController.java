@@ -1,9 +1,6 @@
-package com.lbadvisors.pffc.controllers;
-
-import java.util.List;
+package com.lbadvisors.pffc.info;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,12 +15,17 @@ public class AppInfoController {
     @Autowired
     private Environment env;
 
-    @GetMapping(value = "/")
-    public String getAppInfo() {
+    @GetMapping(value = "")
+    public ResponseEntity<AppInfo> getAppInfo() {
 
-        String variableValue = env.getProperty("COMMIT_MESSAGE");
+        AppInfo appInfo = new AppInfo();
+        appInfo.builtTime = env.getProperty("BUILT_TIME");
+        appInfo.commitMessage = env.getProperty("COMMIT_MESSAGE");
+        appInfo.commitHash = env.getProperty("COMMIT_HASH");
+
         // return new ResponseEntity<>(appInfo, HttpStatus.OK);
-        return "Commit message: " + variableValue;
+        return ResponseEntity.ok(appInfo);
+
     }
 
 }
