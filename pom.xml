@@ -70,16 +70,22 @@
     		<version>2.13.4</version>
 		</dependency>
 
+		<dependency>
+    <groupId>org.modelmapper</groupId>
+    <artifactId>modelmapper</artifactId>
+    <version>3.2.0</version>
+</dependency>
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.5.0</version>
+</dependency>
 <!-- https://frontbackend.com/java/how-to-handle-java-8-date-time-type-java-time-localdatetime-not-supported-exception -->
 <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-databind</artifactId>
 </dependency>
-		<dependency>
-		<groupId>com.fasterxml.jackson.datatype</groupId>
-		<artifactId>jackson-datatype-jsr310</artifactId>
-		<version>2.13.4</version>
-		</dependency>
+		
 	</dependencies>
 
 	<build>
