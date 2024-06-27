@@ -46,7 +46,7 @@ public class AppInfoController {
          */
 
         AppInfo appInfo = new AppInfo();
-        appInfo.builtTime = env.getProperty("BUILT_TIME");// formattedDateTime;
+        appInfo.builtTime = "test" + env.getProperty("BUILT_TIME");// formattedDateTime;
         appInfo.commitMessage = env.getProperty("COMMIT_MESSAGE");
         appInfo.commitHash = env.getProperty("COMMIT_HASH");
 
