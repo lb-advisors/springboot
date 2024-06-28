@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,7 @@ public class AppInfoController {
 
             // Format EST ZonedDateTime to human-readable string
             formattedDateTime = estDateTime.format(formatter) + " EST";
-        } catch (DateTimeParseException e) {
+        } catch (Exception e) {
         }
 
         AppInfo appInfo = new AppInfo();

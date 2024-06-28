@@ -20,7 +20,7 @@ import com.lbadvisors.pffc.exception.ResourceNotFoundException;
 public class DeliveryStopController {
 
     @Autowired
-    private DeliveryStopsService deliveryStopsService;
+    private DeliveryStopService deliveryStopsService;
 
     @GetMapping(value = "")
     public ResponseEntity<List<DeliveryStopGetDto>> getAllDeliveryStops(@RequestParam String driverName,
