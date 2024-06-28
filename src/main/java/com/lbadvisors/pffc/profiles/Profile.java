@@ -1,5 +1,7 @@
 package com.lbadvisors.pffc.profiles;
 
+import java.math.BigDecimal;
+
 import org.hibernate.annotations.DynamicUpdate;
 
 import jakarta.persistence.Column;
@@ -17,7 +19,6 @@ import lombok.Data;
 public class Profile {
 
     @Id
-    @Column(name = "profile_did")
     int profileDid;
 
     private String salesRepName;
@@ -28,8 +29,8 @@ public class Profile {
     private String profileDescription;
     private String profileInstruction;
     private String unitTypePd;
-    float packSizePd;
-    float salesPrice;
+    BigDecimal packSizePd;
+    BigDecimal salesPrice;
     private String salesRepEmail;
     private String customerContactName;
     private String customerCell;
