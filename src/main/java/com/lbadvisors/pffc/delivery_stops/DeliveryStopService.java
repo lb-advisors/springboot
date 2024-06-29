@@ -22,7 +22,7 @@ public class DeliveryStopService {
     public List<DeliveryStopGetDto> findByDriverNameAndDeliveryDate(String driverName,
             LocalDate deliveryDate) {
 
-        return this.deliveryStopsRepository.findByDriverNameAndDeliveryDate(driverName,
+        return this.deliveryStopsRepository.findByDriverNameAndDeliveryDateOrderByPriorityAsc(driverName,
                 deliveryDate).stream().map(
                         (deliveryStop) -> modelMapper.map(
                                 deliveryStop,
