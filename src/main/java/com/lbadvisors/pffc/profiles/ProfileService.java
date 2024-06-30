@@ -26,11 +26,11 @@ public class ProfileService {
                 .collect(Collectors.toList());
     }
 
-    public List<String> getAllDriverName() {
+    public List<SalesRepDto> getAllDriverName() {
         return this.profileRepository.findDistinctSalesRepNames();
     }
 
-    public List<String> getAllCustomers(String salesRepName) {
+    public List<CustomerDto> getAllCustomers(String salesRepName) {
         return this.profileRepository.findDistinctCustomerIds(salesRepName);
     }
 

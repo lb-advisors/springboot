@@ -24,15 +24,15 @@ public class ProfileController {
     }
 
     @GetMapping(value = "/sales-reps")
-    public ResponseEntity<List<String>> getSalesRep() {
-        return new ResponseEntity<List<String>>(
+    public ResponseEntity<List<SalesRepDto>> getSalesRep() {
+        return new ResponseEntity<List<SalesRepDto>>(
                 profileService.getAllDriverName(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/sales-reps/{id}/customers")
-    public ResponseEntity<List<String>> getAllCustomers(@PathVariable("id") String salesRepName) {
+    public ResponseEntity<List<CustomerDto>> getAllCustomers(@PathVariable("id") String salesRepName) {
 
-        return new ResponseEntity<List<String>>(
+        return new ResponseEntity<List<CustomerDto>>(
                 profileService.getAllCustomers(salesRepName), HttpStatus.OK);
     }
 

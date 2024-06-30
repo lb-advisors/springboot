@@ -12,10 +12,10 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer> {
 
     List<Profile> findByCustomerId(int customerId);
 
-    @Query("SELECT DISTINCT c.salesRepName FROM Profile c")
-    List<String> findDistinctSalesRepNames();
+    @Query("SELECT DISTINCT new com.lbadvisors.pffc.profiles.SalesRepDto(c.salesRepName) FROM Profile c")
+    List<SalesRepDto> findDistinctSalesRepNames();
 
-    @Query("SELECT DISTINCT c.customerName FROM Profile c where c.salesRepName = :salesRepName")
-    List<String> findDistinctCustomerIds(@Param("salesRepName") String salesRepName);
+    @Query("SELECT DISTINCT new com.lbadvisors.pffc.profiles.CustomerDto(c.customerId, c.customerName) FROM Profile c where c.salesRepName = :salesRepName")
+    List<CustomerDto> findDistinctCustomerIds(@Param("salesRepName") String salesRepName);
 
 }
