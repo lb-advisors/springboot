@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,6 +22,29 @@ public class ProfileController {
         return new ResponseEntity<List<ProfileGetDto>>(
                 profileService.findByCustomerId(customerId), HttpStatus.OK);
     }
+
+    @GetMapping(value = "/sales-reps")
+    public ResponseEntity<List<String>> getSalesRep() {
+        return new ResponseEntity<List<String>>(
+                profileService.getAllDriverName(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sales-reps/{id}/customers")
+    public ResponseEntity<List<String>> getAllCustomers(@PathVariable("id") String salesRepName) {
+
+        return new ResponseEntity<List<String>>(
+                profileService.getAllCustomers(salesRepName), HttpStatus.OK);
+    }
+
+    /*
+     * @PostMapping(value = "/customers/{id}/orders")
+     * public ResponseEntity<Order> createOrder(@RequestBody OrderPostDTO
+     * orderPostDTO) {
+     * // Order createdOrder =
+     * profileService.createOrder(orderRequestDTO.getItems());
+     * return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+     * }
+     */
 
     /*
      * @GetMapping(value = "/{id}")

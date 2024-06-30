@@ -26,6 +26,14 @@ public class ProfileService {
                 .collect(Collectors.toList());
     }
 
+    public List<String> getAllDriverName() {
+        return this.profileRepository.findDistinctSalesRepNames();
+    }
+
+    public List<String> getAllCustomers(String salesRepName) {
+        return this.profileRepository.findDistinctCustomerIds(salesRepName);
+    }
+
     // @Override
     // public Optional<Routes> getRoute(int id) {
     // return this.routesRepository.findById(id);
