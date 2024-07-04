@@ -38,8 +38,6 @@ public class OrderService {
         List<Order> orders = orderPostDto.getOrderProfiles().stream().map(orderProfilePostDto -> {
             ProfileGetDto profileGetDto = profileService.findById(orderProfilePostDto.getProfileDid());
 
-            ShipToGetDto shipToGetDto = shipToService.findById(orderPostDto.getShipToId());
-
             Order order = modelMapper.map(orderProfilePostDto, Order.class);
 
             order.setOrderId(orderId);
@@ -47,9 +45,7 @@ public class OrderService {
             order.setCustomerId(orderPostDto.getCustomerId());
             order.setDeliveryDate(orderPostDto.getDeliveryDate());
             order.setShipToId(orderPostDto.getShipToId());
-            order.setShipToName(shipToGetDto.getShipToName());
             order.setTotalPrice(orderPostDto.getTotalPrice());
-
             order.setCustomerName(profileGetDto.getCustomerName());
             order.setCustomerEmail(profileGetDto.getCustomerEmail());
             order.setSalesRepName(profileGetDto.getSalesRepName());
@@ -59,6 +55,12 @@ public class OrderService {
             order.setProfileDescription(profileGetDto.getProfiles().get(0).getProfileDescription());
             order.setPrice(profileGetDto.getProfiles().get(0).getSalesPrice());
             order.setUnitType(profileGetDto.getProfiles().get(0).getUnitTypePd());
+
+            if (orderPostDto.getShipToId() != null) {
+                ShipToGetDto shipToGetDto = shipToService.findById(orderPostDto.getShipToId());
+                order.setShipToName(shipToGetDto.getShipToName());
+            }
+
             // order.setProfileId(profileGetDto.getProfileId());
             // TODO: add rest
 
