@@ -16,9 +16,12 @@ public class ShipTo {
     @Column(name = "ship_to_id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
+    // private Profile profile;
     @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
-    private Profile profile;
+    @Column(name = "customer_id")
+    private String customerId;
 
     private String shipToName;
     private String shipToAddress;

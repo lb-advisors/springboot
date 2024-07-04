@@ -7,6 +7,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -35,6 +36,9 @@ public class Profile {
     private String customerCell;
     private String customerEmail;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch =
+    // FetchType.LAZY)
+    @OneToMany(targetEntity = ShipTo.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
     private List<ShipTo> shipTos;
 }
