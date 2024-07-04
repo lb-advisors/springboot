@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class OrderGetDto {
 @Data
 @NoArgsConstructor
 class OrderProfileGetDto {
+    @JsonProperty("id")
     private Integer profileDid;
     private String profileDescription;
     private String unitType;

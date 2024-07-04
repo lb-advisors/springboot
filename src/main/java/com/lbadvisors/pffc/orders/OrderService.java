@@ -55,10 +55,10 @@ public class OrderService {
             order.setSalesRepName(profileGetDto.getSalesRepName());
             order.setSalesRepPhone(profileGetDto.getSalesRepPhone());
 
-            order.setPackSize(profileGetDto.getPackSizePd());
-            order.setProfileDescription(profileGetDto.getProfileDescription());
-            order.setPrice(profileGetDto.getSalesPrice());
-            order.setUnitType(profileGetDto.getUnitTypePd());
+            order.setPackSize(profileGetDto.getProfiles().get(0).getPackSizePd());
+            order.setProfileDescription(profileGetDto.getProfiles().get(0).getProfileDescription());
+            order.setPrice(profileGetDto.getProfiles().get(0).getSalesPrice());
+            order.setUnitType(profileGetDto.getProfiles().get(0).getUnitTypePd());
             // order.setProfileId(profileGetDto.getProfileId());
             // TODO: add rest
 

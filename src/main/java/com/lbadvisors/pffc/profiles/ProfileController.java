@@ -15,9 +15,9 @@ public class ProfileController {
     private ProfileService profileService;
 
     @GetMapping(value = "/customers/{id}/profiles")
-    public ResponseEntity<List<ProfileGetDto>> getProfiles(@PathVariable("id") int customerId) {
+    public ResponseEntity<ProfileGetDto> getProfiles(@PathVariable("id") int customerId) {
 
-        return new ResponseEntity<>(
+        return new ResponseEntity<ProfileGetDto>(
                 profileService.findByCustomerId(customerId), HttpStatus.OK);
     }
 }

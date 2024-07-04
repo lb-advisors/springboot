@@ -10,9 +10,6 @@ import lombok.Data;
 @Data
 public class ProfileGetDto {
 
-    @JsonProperty("id")
-    Integer profileDid;
-
     Integer customerId;
     private String customerEmail;
     private String customerName;
@@ -21,10 +18,7 @@ public class ProfileGetDto {
     private String salesRepPhone;
 
     // private String profileDid;
-    private String profileDescription;
-    private String unitTypePd;
-    BigDecimal packSizePd;
-    BigDecimal salesPrice;
+    private List<ProfileDto> profiles;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile")
     private List<ShipToGetDto> shipTos;

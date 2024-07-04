@@ -1,5 +1,6 @@
 package com.lbadvisors.pffc.profiles;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,24 +26,66 @@ public class ProfileService {
 
                 Profile profile = this.profileRepository.findById(profileDid).orElseThrow(
                                 () -> new EntityNotFoundException("Entity with id " + profileDid + " not found"));
-                return modelMapper.map(
+
+                ProfileGetDto profileGetDto = new ProfileGetDto();
+                profileGetDto.setCustomerId(profile.getCustomerId());
+                profileGetDto.setCustomerName(profile.getCustomerName());
+                profileGetDto.setSalesRepName(profile.getSalesRepName());
+                profileGetDto.setSalesRepPhone(profile.getSalesRepPhone());
+
+                ProfileDto profileDto = modelMapper.map(
                                 profile,
-                                ProfileGetDto.class);
+                                ProfileDto.class);
+
+                profileGetDto.setProfiles(Arrays.asList(profileDto));
+
+                List<ShipToGetDto> shipToGetDtos = profile.getShipTos().stream().map(
+                                (shipTo) -> {
+                                        ShipToGetDto shipToGetDto = modelMapper.map(
+                                                        shipTo,
+                                                        ShipToGetDto.class);
+                                        return shipToGetDto;
+                                })
+                                .collect(Collectors.toList());
+
+                profileGetDto.setShipTos(shipToGetDtos);
+                return profileGetDto;
 
         }
 
-        public List<ProfileGetDto> findByCustomerId(int customerId) {
+        public ProfileGetDto findByCustomerId(int customerId) {
 
                 List<Profile> profiles = this.profileRepository.findByCustomerId(customerId);
 
-                return profiles.stream().map(
+                ProfileGetDto profileGetDto = new ProfileGetDto();
+                profileGetDto.setCustomerId(profiles.get(0).getCustomerId());
+                profileGetDto.setCustomerName(profiles.get(0).getCustomerName());
+                profileGetDto.setSalesRepName(profiles.get(0).getSalesRepName());
+                profileGetDto.setSalesRepPhone(profiles.get(0).getSalesRepPhone());
+
+                List<ProfileDto> profileDtos = profiles.stream().map(
                                 (profile) -> {
-                                        ProfileGetDto profileGetDto = modelMapper.map(
+                                        ProfileDto profileDto = modelMapper.map(
                                                         profile,
-                                                        ProfileGetDto.class);
-                                        return profileGetDto;
+                                                        ProfileDto.class);
+                                        return profileDto;
                                 })
                                 .collect(Collectors.toList());
+
+                profileGetDto.setProfiles(profileDtos);
+
+                List<ShipToGetDto> shipToGetDtos = profiles.get(0).getShipTos().stream().map(
+                                (shipTo) -> {
+                                        ShipToGetDto shipToGetDto = modelMapper.map(
+                                                        shipTo,
+                                                        ShipToGetDto.class);
+                                        return shipToGetDto;
+                                })
+                                .collect(Collectors.toList());
+
+                profileGetDto.setShipTos(shipToGetDtos);
+
+                return profileGetDto;
         }
 
         public List<SalesRepGetDto> getAllSalesRepNames() {
