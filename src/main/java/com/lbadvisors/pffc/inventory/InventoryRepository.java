@@ -1,9 +1,9 @@
-package com.lbadvisors.pffc.controllers;
+package com.lbadvisors.pffc.inventory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RoutesRepository extends JpaRepository<Routes, Integer> {
+public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
 
 }

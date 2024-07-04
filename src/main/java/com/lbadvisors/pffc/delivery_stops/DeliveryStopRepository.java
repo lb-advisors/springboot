@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.lbadvisors.pffc.drivers.DriverGetDto;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,7 +14,7 @@ public interface DeliveryStopRepository extends JpaRepository<DeliveryStop, Inte
 
     List<DeliveryStop> findByDriverNameAndDeliveryDateOrderByPriorityAsc(String driverName, LocalDate deliveryDate);
 
-    @Query("SELECT DISTINCT c.driverName FROM DeliveryStop c")
-    List<String> findDistinctDriverNames();
+    @Query("SELECT DISTINCT NEW com.lbadvisors.pffc.drivers.DriverGetDto(c.driverName) FROM DeliveryStop c")
+    List<DriverGetDto> findDistinctDriverNames();
 
 }

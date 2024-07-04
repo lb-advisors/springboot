@@ -1,9 +1,9 @@
 package com.lbadvisors.pffc.delivery_stops;
 
 import java.time.LocalDateTime;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 public class DeliveryStopGetDto {
     private int id;
     private String driverName;

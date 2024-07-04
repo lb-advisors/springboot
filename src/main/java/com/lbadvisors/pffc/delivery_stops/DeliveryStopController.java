@@ -28,7 +28,7 @@ public class DeliveryStopController {
     public ResponseEntity<List<DeliveryStopGetDto>> getAllDeliveryStops(@RequestParam String driverName,
             @RequestParam LocalDate deliveryDate) {
 
-        return new ResponseEntity<List<DeliveryStopGetDto>>(
+        return new ResponseEntity<>(
                 deliveryStopsService.findByDriverNameAndDeliveryDate(driverName, deliveryDate), HttpStatus.OK);
     }
 

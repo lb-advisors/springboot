@@ -1,32 +1,30 @@
 package com.lbadvisors.pffc.profiles;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-import org.hibernate.annotations.DynamicUpdate;
-
-import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
 @Data
-@DynamicUpdate
 @Table(name = "profile_child")
 public class Profile {
 
     @Id
-    private int profileDid;
+    private Integer profileDid;
 
     private String salesRepName;
-    private String salesRepCell;
+    private String salesRepPhone;
     private int profileId;
-    private int customerId;
+    private Integer customerId;
     private String customerName;
-    private int compItemId;
+    private Integer compItemId;
     private String profileDescription;
     private String profileInstruction;
     private String unitTypePd;
@@ -36,4 +34,7 @@ public class Profile {
     private String customerContactName;
     private String customerCell;
     private String customerEmail;
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<ShipTo> shipTos;
 }

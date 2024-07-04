@@ -1,15 +1,12 @@
-package com.lbadvisors.pffc.profiles;
-
-import java.math.BigDecimal;
+package com.lbadvisors.pffc.sales_reps;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @AllArgsConstructor
-public class SalesRepDto {
+public class SalesRepGetDto {
 
     @JsonProperty("name")
     String salesRepName;

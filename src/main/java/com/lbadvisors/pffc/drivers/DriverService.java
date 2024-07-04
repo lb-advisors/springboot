@@ -18,18 +18,15 @@ public class DriverService {
     @Autowired
     ModelMapper modelMapper;
 
-    public List<String> findAll() {
+    public List<DriverGetDto> findAll() {
 
-        return this.deliveryStopRepository.findDistinctDriverNames();
-        /*
-         * .stream().map(
-         * (driver) -> modelMapper.map(
-         * driver,
-         * DriverGetDto.class))
-         * .collect(Collectors.toList());
-         * 
-         * 
-         */
+        return this.deliveryStopRepository.findDistinctDriverNames()
+                .stream().map(
+                        (driver) -> modelMapper.map(
+                                driver,
+                                DriverGetDto.class))
+                .collect(Collectors.toList());
+
     }
 
 }

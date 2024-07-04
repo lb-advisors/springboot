@@ -1,4 +1,4 @@
-package com.lbadvisors.pffc.drivers;
+package com.lbadvisors.pffc.inventory;
 
 import java.util.List;
 
@@ -6,19 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/drivers")
-public class DriverController {
+public class InventoryController {
 
     @Autowired
-    private DriverService driverService;
+    private InventoryService inventoryService;
 
-    @GetMapping(value = "")
-    public ResponseEntity<List<DriverGetDto>> getAllDrivers() {
+    @GetMapping(value = "/inventory")
+    public ResponseEntity<List<Inventory>> getAllInventory() {
         return new ResponseEntity<>(
-                driverService.findAll(), HttpStatus.OK);
+                inventoryService.getAllInventory(), HttpStatus.OK);
     }
+
 }

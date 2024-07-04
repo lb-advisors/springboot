@@ -1,5 +1,6 @@
-package com.lbadvisors.pffc.delivery_stops;
+package com.lbadvisors.pffc.orders;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.DynamicUpdate;
@@ -14,34 +15,43 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
 @Data
 @DynamicUpdate
+@Table(name = "`order`")
 @EntityListeners(AuditingEntityListener.class)
-public class DeliveryStop {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    Integer id;
 
-    private String driverName;
-    private int invoiceNumber;
+    private Integer orderId;
+
+    private Integer customerId;
+    private String customerName;
+    private String customerEmail;
+
+    private String salesRepName;
+    private String salesRepPhone;
+
+    private Integer profileDid;
+    private String profileDescription;
+    private String unitType;
+    private BigDecimal packSize;
+    private BigDecimal price;
+    private BigDecimal quantity;
+
+    private BigDecimal totalPrice;
     private LocalDate deliveryDate;
-    private int priority;
-    @Column(name = "delivery_address_1")
-    private String deliveryAddress1;
-    @Column(name = "delivery_address_2")
-    private String deliveryAddress2;
-    @Column(name = "delivery_address_3")
-    private String deliveryAddress3;
-    private String customerPhone;
-    private LocalDateTime plannedArrivalTime;
-    private LocalDateTime actualArrivalTime;
-    private String comments;
-    private String rating;
-    private String pictureKey;
+
+    private Integer profileId;
+
+    private Integer shipToId;
+    private String shipToName;
 
     @CreatedBy
     private String createdBy;
