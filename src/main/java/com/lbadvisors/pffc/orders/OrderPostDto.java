@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Value;
 
 @Value
 public class OrderPostDto {
-    @NotEmpty
     private Integer customerId;
     private LocalDate deliveryDate;
     private Integer shipToId;
@@ -20,7 +20,6 @@ public class OrderPostDto {
 
 @Value
 class OrderProfilePostDto {
-    @NotEmpty
     private Integer profileDid;
     private BigDecimal quantity;
 }

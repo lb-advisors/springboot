@@ -1,9 +1,10 @@
 package com.lbadvisors.pffc.delivery_stops;
 
 import java.time.LocalDateTime;
-import lombok.Value;
 
-@Value
+import lombok.Data;
+
+@Data
 public class DeliveryStopGetDto {
     private int id;
     private String driverName;
@@ -13,5 +14,4 @@ public class DeliveryStopGetDto {
     private String deliveryAddress3;
     private LocalDateTime plannedArrivalTime;
     private LocalDateTime actualArrivalTime;
-
 }

@@ -27,11 +27,9 @@ public class ProfileService {
                 Profile profile = this.profileRepository.findById(profileDid).orElseThrow(
                                 () -> new EntityNotFoundException("Entity with id " + profileDid + " not found"));
 
-                ProfileGetDto profileGetDto = new ProfileGetDto();
-                profileGetDto.setCustomerId(profile.getCustomerId());
-                profileGetDto.setCustomerName(profile.getCustomerName());
-                profileGetDto.setSalesRepName(profile.getSalesRepName());
-                profileGetDto.setSalesRepPhone(profile.getSalesRepPhone());
+                ProfileGetDto profileGetDto = modelMapper.map(
+                                profile,
+                                ProfileGetDto.class);
 
                 ProfileDto profileDto = modelMapper.map(
                                 profile,
@@ -56,6 +54,10 @@ public class ProfileService {
         public ProfileGetDto findByCustomerId(int customerId) {
 
                 List<Profile> profiles = this.profileRepository.findByCustomerId(customerId);
+
+                if (profiles.isEmpty()) {
+                        new EntityNotFoundException("Entity with id " + customerId + " not found");
+                }
 
                 ProfileGetDto profileGetDto = new ProfileGetDto();
                 profileGetDto.setCustomerId(profiles.get(0).getCustomerId());

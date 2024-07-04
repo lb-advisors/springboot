@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 @RestController
 @CrossOrigin
 public class OrderController {
@@ -16,7 +18,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping(value = "/customers/{id}/orders")
-    public ResponseEntity<OrderGetDto> createOrder(@RequestBody OrderPostDto orderPostDto) {
+    public ResponseEntity<OrderGetDto> createOrder(@Valid @RequestBody OrderPostDto orderPostDto) {
 
         return new ResponseEntity<>(
                 orderService.saveOrder(orderPostDto), HttpStatus.OK);
