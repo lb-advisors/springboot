@@ -12,6 +12,7 @@ import com.lbadvisors.pffc.profiles.ProfileGetDto;
 import com.lbadvisors.pffc.profiles.ProfileService;
 import com.lbadvisors.pffc.profiles.ShipToGetDto;
 import com.lbadvisors.pffc.profiles.ShipToService;
+import com.lbadvisors.pffc.util.EmailService;
 
 import jakarta.transaction.Transactional;
 
@@ -26,6 +27,9 @@ public class OrderService {
 
     @Autowired
     ShipToService shipToService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -70,6 +74,9 @@ public class OrderService {
         }).collect(Collectors.toList());
 
         List<Order> savedOrders = orderRepository.saveAll(orders);
+
+        // send confirmation email
+        // emailService.sendEmail("oleblond@gmail.com", "Test", "Email Body");
 
         OrderGetDto orderGetDto = new OrderGetDto(
                 savedOrders.get(0).getOrderId(),
