@@ -16,8 +16,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Entity
@@ -47,10 +45,8 @@ public class Order {
     private BigDecimal price;
     private BigDecimal quantity;
 
-    @Positive
     private BigDecimal totalPrice;
 
-    @Future(message = "The delivery date must be in the future")
     private LocalDate deliveryDate;
 
     private Integer profileId;

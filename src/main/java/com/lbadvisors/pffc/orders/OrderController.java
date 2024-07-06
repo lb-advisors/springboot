@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 
 @RestController
 @CrossOrigin
@@ -20,7 +19,7 @@ public class OrderController {
 
     @PostMapping(value = "/customers/{id}/orders")
     @Operation(summary = "Create a new order")
-    public ResponseEntity<OrderGetDto> createOrder(@Valid @RequestBody OrderPostDto orderPostDto) {
+    public ResponseEntity<OrderGetDto> createOrder(@RequestBody OrderPostDto orderPostDto) {
 
         return new ResponseEntity<>(
                 orderService.saveOrder(orderPostDto), HttpStatus.OK);

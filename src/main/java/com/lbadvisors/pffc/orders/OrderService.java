@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import com.lbadvisors.pffc.profiles.ProfileGetDto;
 import com.lbadvisors.pffc.profiles.ProfileService;
@@ -15,8 +16,10 @@ import com.lbadvisors.pffc.profiles.ShipToService;
 import com.lbadvisors.pffc.util.EmailService;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 @Service
+@Validated
 public class OrderService {
 
     @Autowired
@@ -28,14 +31,14 @@ public class OrderService {
     @Autowired
     ShipToService shipToService;
 
-    @Autowired
-    private EmailService emailService;
+    // @Autowired
+    // private EmailService emailService;
 
     @Autowired
     ModelMapper modelMapper;
 
     @Transactional
-    public OrderGetDto saveOrder(OrderPostDto orderPostDto) {
+    public OrderGetDto saveOrder(@Valid OrderPostDto orderPostDto) {
 
         Integer orderId = orderRepository.getNextOrderIdSequenceValue();
 

@@ -4,8 +4,9 @@ import lombok.Data;
 
 @Data
 public class AppInfo {
-String builtTime;
-String commitMessage;
-String commitHash;
+    String environment;
+    String builtTime;
+    String commitMessage;
+    String commitHash;
 
 }

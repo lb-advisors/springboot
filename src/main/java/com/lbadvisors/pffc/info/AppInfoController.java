@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.core.env.Environment;
 
 @RestController
@@ -21,6 +23,7 @@ public class AppInfoController {
     private Environment env;
 
     @GetMapping(value = "")
+    @Operation(summary = "Get information about the current build")
     public ResponseEntity<AppInfo> getAppInfo() {
 
         String formattedDateTime = "N/A";
@@ -44,6 +47,7 @@ public class AppInfoController {
         }
 
         AppInfo appInfo = new AppInfo();
+        appInfo.environment = env.getActiveProfiles()[0];
         appInfo.builtTime = formattedDateTime;
         appInfo.commitMessage = env.getProperty("COMMIT_MESSAGE");
         appInfo.commitHash = env.getProperty("COMMIT_HASH");

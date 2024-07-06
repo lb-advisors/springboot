@@ -10,6 +10,15 @@ public class EnvironmentChecker {
     @Autowired
     private Environment environment;
 
+    public boolean isLocal() {
+        for (String profile : environment.getActiveProfiles()) {
+            if (profile.equalsIgnoreCase("local")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isDev() {
         for (String profile : environment.getActiveProfiles()) {
             if (profile.equalsIgnoreCase("dev")) {

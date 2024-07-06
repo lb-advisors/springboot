@@ -2,9 +2,12 @@ package com.lbadvisors.pffc.exception;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -56,7 +59,7 @@ public class ControllerAdvisor {
 
         StringBuilder errroMessage = new StringBuilder();
         ex.getConstraintViolations().forEach(violation -> {
-            errroMessage.append(violation.getMessage()).append(". ");
+            errroMessage.append(violation.getMessage()).append("; ");
         });
 
         ErrorMessage message = new ErrorMessage(
@@ -64,6 +67,41 @@ public class ControllerAdvisor {
                 errroMessage.toString(),
                 "Constraints violation");
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorMessage> handleConstraintViolationException(MethodArgumentNotValidException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        String errrorMessage = errors.entrySet()
+                .stream()
+                .map(entry -> entry.getValue())
+                .collect(Collectors.joining("; "));
+
+        ErrorMessage message = new ErrorMessage(
+                HttpStatus.BAD_REQUEST.value(),
+                errrorMessage,
+                "Invalid parameters");
+
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorMessage> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorMessage message = new ErrorMessage(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                "Invalid parameters");
+
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

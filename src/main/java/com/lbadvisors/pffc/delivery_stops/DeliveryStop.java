@@ -41,7 +41,9 @@ public class DeliveryStop {
     private LocalDateTime actualArrivalTime;
     private String comments;
     private String rating;
-    private String pictureKey;
+
+    @Column(name = "s3_file_key")
+    private String s3FileKey;
 
     @CreatedBy
     private String createdBy;

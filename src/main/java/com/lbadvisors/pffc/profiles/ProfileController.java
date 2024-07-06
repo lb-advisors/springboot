@@ -7,12 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 public class ProfileController {
 
     @Autowired
     private ProfileService profileService;
 
+    @Operation(summary = "Get all profiles related to a customer")
     @GetMapping(value = "/customers/{id}/profiles")
     public ResponseEntity<ProfileGetDto> getProfiles(@PathVariable("id") int customerId) {
 
