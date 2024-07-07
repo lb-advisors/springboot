@@ -42,7 +42,7 @@ public class AwsService {
             }
 
             PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(awsProperties.getBucketName())
+                    .bucket(awsProperties.getBucketName() + "##")
                     .key(s3FileKey)
                     .build();
 

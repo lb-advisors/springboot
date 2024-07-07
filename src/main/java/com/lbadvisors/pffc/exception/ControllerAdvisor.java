@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -42,6 +45,8 @@ public class ControllerAdvisor {
      * }
      */
 
+    private static final Logger logger = LoggerFactory.getLogger(ControllerAdvisor.class);
+
     @ExceptionHandler(value = { ResponseStatusException.class })
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorMessage> resourceNotFoundException(ResponseStatusException ex) {
@@ -66,6 +71,9 @@ public class ControllerAdvisor {
                 HttpStatus.BAD_REQUEST.value(),
                 errroMessage.toString(),
                 "Constraints violation");
+
+        logger.error(message.getMessage());
+
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 
@@ -104,10 +112,20 @@ public class ControllerAdvisor {
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorMessage> handleIllegalArgumentException(DataIntegrityViolationException ex) {
+        ErrorMessage message = new ErrorMessage(
+                HttpStatus.CONFLICT.value(),
+                "Data integrity violation occurred: " + ex.getMostSpecificCause().getMessage(),
+                "Invalid parameters");
+
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex) {
-
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 ex.getMessage(),
