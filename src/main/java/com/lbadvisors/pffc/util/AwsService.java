@@ -52,9 +52,7 @@ public class AwsService {
                     RequestBody.fromInputStream(inputStream, inputStream.available()));
 
         } catch (AwsServiceException | SdkClientException | IOException e) {
-            e.printStackTrace();
             throw new RuntimeException("Error uploading the image");
-
         }
 
     };
