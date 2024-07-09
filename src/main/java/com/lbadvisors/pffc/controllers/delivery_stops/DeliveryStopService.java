@@ -42,7 +42,8 @@ public class DeliveryStopService {
                                                         DeliveryStopGetDto deliveryStopGetDto = modelMapper.map(
                                                                         deliveryStop,
                                                                         DeliveryStopGetDto.class);
-                                                        if (deliveryStop.getS3FileKey() != null) {
+                                                        if (deliveryStop.getS3FileKey() != null && deliveryStop
+                                                                        .getS3FileKey().length() > 0) {
                                                                 deliveryStopGetDto.setFileUrl(awsProperties
                                                                                 .getEndpointUrl()
                                                                                 + deliveryStop.getS3FileKey());

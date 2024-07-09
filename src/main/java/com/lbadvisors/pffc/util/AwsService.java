@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.tika.Tika;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +20,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
 public class AwsService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AwsService.class);
 
     @Autowired
     private Tika tika;
@@ -42,7 +46,7 @@ public class AwsService {
             }
 
             PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(awsProperties.getBucketName() + "##")
+                    .bucket(awsProperties.getBucketName())
                     .key(s3FileKey)
                     .build();
 
@@ -52,6 +56,7 @@ public class AwsService {
                     RequestBody.fromInputStream(inputStream, inputStream.available()));
 
         } catch (AwsServiceException | SdkClientException | IOException e) {
+            logger.error(e.getMessage());
             throw new RuntimeException("Error uploading the image");
         }
 
