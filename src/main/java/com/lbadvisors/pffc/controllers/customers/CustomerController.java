@@ -17,11 +17,12 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping(value = "/sales-reps/{id}/customers")
+    @GetMapping(value = "/companies/{id}/sales-reps/{name}/customers")
     @Operation(summary = "Get sales rep's list of customers")
-    public ResponseEntity<List<CustomerGetDto>> getAllCustomers(@PathVariable("id") String salesRepName) {
+    public ResponseEntity<List<CustomerGetDto>> getAllCustomers(@PathVariable("id") Integer companyId,
+            @PathVariable("name") String salesRepName) {
 
         return new ResponseEntity<>(
-                customerService.getAllCustomers(salesRepName), HttpStatus.OK);
+                customerService.getAllCustomers(companyId, salesRepName), HttpStatus.OK);
     }
 }

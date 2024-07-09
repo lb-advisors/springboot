@@ -1,4 +1,4 @@
-package com.lbadvisors.pffc.controllers.sales_reps;
+package com.lbadvisors.pffc.controllers.company;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.lbadvisors.pffc.controllers.profiles.ProfileRepository;
 
 @Service
-public class SalesRepService {
+public class CompanyService {
 
     @Autowired
     ProfileRepository profileRepository;
@@ -17,12 +17,11 @@ public class SalesRepService {
     @Autowired
     ModelMapper modelMapper;
 
-    public List<SalesRepGetDto> getSalesReps(Integer companyId) {
-        return this.profileRepository.findDistinctSalesRepNames(
-                companyId).stream().map(
-                        (profile) -> modelMapper.map(
-                                profile,
-                                SalesRepGetDto.class))
+    public List<CompanyGetDto> getAllCompanies() {
+        return this.profileRepository.findDistinctCompanies().stream().map(
+                (company) -> modelMapper.map(
+                        company,
+                        CompanyGetDto.class))
                 .collect(Collectors.toList());
     }
 

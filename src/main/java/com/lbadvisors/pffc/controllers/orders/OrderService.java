@@ -1,7 +1,7 @@
 package com.lbadvisors.pffc.controllers.orders;
 
+import java.time.LocalDate;
 import java.util.List;
-
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -13,6 +13,7 @@ import com.lbadvisors.pffc.controllers.profiles.ProfileGetDto;
 import com.lbadvisors.pffc.controllers.profiles.ProfileService;
 import com.lbadvisors.pffc.controllers.profiles.ShipToGetDto;
 import com.lbadvisors.pffc.controllers.profiles.ShipToService;
+import com.lbadvisors.pffc.exception.ResourceAlreadyExistsException;
 import com.lbadvisors.pffc.util.EmailService;
 
 import jakarta.transaction.Transactional;
@@ -39,6 +40,17 @@ public class OrderService {
 
     @Transactional
     public OrderGetDto saveOrder(@Valid OrderPostDto orderPostDto) {
+
+        // check if there is alre
+        Integer customerID = orderPostDto.getCustomerId();
+        LocalDate deliveryDate = orderPostDto.getDeliveryDate();
+        Integer shipToId = orderPostDto.getShipToId();
+
+        // customers cannot place two orders for the same day / ship to
+        orderRepository.findFirstByCustomerIdAndDeliveryDateAndShipToId(customerID, deliveryDate,
+                shipToId).ifPresent(entity -> {
+                    throw new ResourceAlreadyExistsException("There is already an order for that day.");
+                });
 
         Integer orderId = orderRepository.getNextOrderIdSequenceValue();
 

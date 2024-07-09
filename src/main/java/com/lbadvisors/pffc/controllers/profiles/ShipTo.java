@@ -17,9 +17,10 @@ public class ShipTo {
     // @ManyToOne(fetch = FetchType.LAZY)
     // @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
     // private Profile profile;
-    @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
-    @Column(name = "customer_id")
-    private String customerId;
+
+    // @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
+    // @Column(name = "customer_id")
+    private Integer customerId;
 
     private String shipToName;
     private String shipToAddress;

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,11 +16,11 @@ public class SalesRepController {
     @Autowired
     private SalesRepService salesRepService;
 
-    @GetMapping(value = "/sales-reps")
+    @GetMapping(value = "/companies/{id}/sales-reps")
     @Operation(summary = "Get all sales reps")
-    public ResponseEntity<List<SalesRepGetDto>> getSalesRep() {
+    public ResponseEntity<List<SalesRepGetDto>> getSalesRep(@PathVariable("id") Integer companyId) {
         return new ResponseEntity<>(
-                salesRepService.getAllSalesRepNames(), HttpStatus.OK);
+                salesRepService.getSalesReps(companyId), HttpStatus.OK);
     }
 
 }

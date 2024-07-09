@@ -20,6 +20,9 @@ public class ProfileService {
         ProfileRepository profileRepository;
 
         @Autowired
+        ShipToRepository shipToTRepository;
+
+        @Autowired
         ModelMapper modelMapper;
 
         public ProfileGetDto findById(Integer profileDid) {
@@ -37,16 +40,6 @@ public class ProfileService {
 
                 profileGetDto.setProfiles(Arrays.asList(profileDto));
 
-                List<ShipToGetDto> shipToGetDtos = profile.getShipTos().stream().map(
-                                (shipTo) -> {
-                                        ShipToGetDto shipToGetDto = modelMapper.map(
-                                                        shipTo,
-                                                        ShipToGetDto.class);
-                                        return shipToGetDto;
-                                })
-                                .collect(Collectors.toList());
-
-                profileGetDto.setShipTos(shipToGetDtos);
                 return profileGetDto;
 
         }
@@ -76,35 +69,41 @@ public class ProfileService {
 
                 profileGetDto.setProfiles(profileDtos);
 
-                List<ShipToGetDto> shipToGetDtos = profiles.get(0).getShipTos().stream().map(
-                                (shipTo) -> {
-                                        ShipToGetDto shipToGetDto = modelMapper.map(
-                                                        shipTo,
-                                                        ShipToGetDto.class);
-                                        return shipToGetDto;
-                                })
-                                .collect(Collectors.toList());
+                List<ShipTo> shipTos = shipToTRepository.findByCustomerId(customerId);
 
-                profileGetDto.setShipTos(shipToGetDtos);
+                if (shipTos.size() > 0) {
+                        List<ShipToGetDto> shipToGetDtos = shipTos.stream().map(
+                                        (shipTo) -> {
+                                                ShipToGetDto shipToGetDto = modelMapper.map(
+                                                                shipTo,
+                                                                ShipToGetDto.class);
+                                                return shipToGetDto;
+                                        })
+                                        .collect(Collectors.toList());
+                        profileGetDto.setShipTos(shipToGetDtos);
+
+                }
 
                 return profileGetDto;
         }
 
-        public List<SalesRepGetDto> getAllSalesRepNames() {
-                return this.profileRepository.findDistinctSalesRepNames().stream().map(
-                                (profile) -> modelMapper.map(
-                                                profile,
-                                                SalesRepGetDto.class))
-                                .collect(Collectors.toList());
-        }
-
-        public List<CustomerGetDto> getAllCustomers(String salesRepName) {
-                return profileRepository.findDistinctCustomerIds(salesRepName).stream().map(
-                                (profile) -> modelMapper.map(
-                                                profile,
-                                                CustomerGetDto.class))
-                                .collect(Collectors.toList());
-        }
+        /*
+         * public List<SalesRepGetDto> getAllSalesRepNames() {
+         * return this.profileRepository.findDistinctSalesRepNames().stream().map(
+         * (profile) -> modelMapper.map(
+         * profile,
+         * SalesRepGetDto.class))
+         * .collect(Collectors.toList());
+         * }
+         * 
+         * public List<CustomerGetDto> getAllCustomers(String salesRepName) {
+         * return profileRepository.findDistinctCustomerIds(salesRepName).stream().map(
+         * (profile) -> modelMapper.map(
+         * profile,
+         * CustomerGetDto.class))
+         * .collect(Collectors.toList());
+         * }
+         */
 
         // @Override
         // public Optional<Routes> getRoute(int id) {

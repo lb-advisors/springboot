@@ -36,9 +36,13 @@ public class Profile {
     private String customerCell;
     private String customerEmail;
 
+    private Integer companyId;
+    private String companyName;
+
     // @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch =
     // FetchType.LAZY)
-    @OneToMany(targetEntity = ShipTo.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
-    private List<ShipTo> shipTos;
+    // @OneToMany(targetEntity = ShipTo.class, cascade = CascadeType.ALL, fetch =
+    // FetchType.EAGER)
+    // @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
+    // private List<ShipTo> shipTos;
 }

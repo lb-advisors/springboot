@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.lbadvisors.pffc.controllers.company.CompanyGetDto;
 import com.lbadvisors.pffc.controllers.customers.CustomerGetDto;
 import com.lbadvisors.pffc.controllers.sales_reps.SalesRepGetDto;
 
@@ -18,10 +19,14 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer> {
 
     Optional<Profile> findById(int id);
 
-    @Query("SELECT DISTINCT new com.lbadvisors.pffc.controllers.sales_reps.SalesRepGetDto(c.salesRepName) FROM Profile c")
-    List<SalesRepGetDto> findDistinctSalesRepNames();
+    @Query("SELECT DISTINCT new com.lbadvisors.pffc.controllers.company.CompanyGetDto(c.companyId, c.companyName) FROM Profile c")
+    List<CompanyGetDto> findDistinctCompanies();
 
-    @Query("SELECT DISTINCT new com.lbadvisors.pffc.controllers.customers.CustomerGetDto(c.customerId, c.customerName) FROM Profile c where c.salesRepName = :salesRepName")
-    List<CustomerGetDto> findDistinctCustomerIds(@Param("salesRepName") String salesRepName);
+    @Query("SELECT DISTINCT new com.lbadvisors.pffc.controllers.sales_reps.SalesRepGetDto(c.salesRepName) FROM Profile c where c.companyId = :companyId")
+    List<SalesRepGetDto> findDistinctSalesRepNames(@Param("companyId") Integer companyId);
+
+    @Query("SELECT DISTINCT new com.lbadvisors.pffc.controllers.customers.CustomerGetDto(c.customerId, c.customerName) FROM Profile c where c.companyId = :companyId and c.salesRepName = :salesRepName")
+    List<CustomerGetDto> findDistinctCustomers(@Param("companyId") Integer companyId,
+            @Param("salesRepName") String salesRepName);
 
 }

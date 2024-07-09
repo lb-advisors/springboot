@@ -38,9 +38,17 @@ public class DeliveryStopService {
 
                 return this.deliveryStopsRepository.findByDriverNameAndDeliveryDateOrderByPriorityAsc(driverName,
                                 deliveryDate).stream().map(
-                                                (deliveryStop) -> modelMapper.map(
-                                                                deliveryStop,
-                                                                DeliveryStopGetDto.class))
+                                                (deliveryStop) -> {
+                                                        DeliveryStopGetDto deliveryStopGetDto = modelMapper.map(
+                                                                        deliveryStop,
+                                                                        DeliveryStopGetDto.class);
+                                                        if (deliveryStop.getS3FileKey() != null) {
+                                                                deliveryStopGetDto.setFileUrl(awsProperties
+                                                                                .getEndpointUrl()
+                                                                                + deliveryStop.getS3FileKey());
+                                                        }
+                                                        return deliveryStopGetDto;
+                                                })
                                 .collect(Collectors.toList());
         }
 

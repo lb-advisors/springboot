@@ -18,6 +18,6 @@ public class ProfileGetDto {
     // private String profileDid;
     private List<ProfileDto> profiles;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile")
+    // @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile")
     private List<ShipToGetDto> shipTos;
 }

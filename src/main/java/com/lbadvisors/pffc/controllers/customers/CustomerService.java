@@ -17,11 +17,12 @@ public class CustomerService {
         @Autowired
         ModelMapper modelMapper;
 
-        public List<CustomerGetDto> getAllCustomers(String salesRepName) {
-                return this.profileRepository.findDistinctCustomerIds(salesRepName).stream().map(
-                                (profile) -> modelMapper.map(
-                                                profile,
-                                                CustomerGetDto.class))
+        public List<CustomerGetDto> getAllCustomers(Integer companyId, String salesRepName) {
+                return this.profileRepository.findDistinctCustomers(
+                                companyId, salesRepName).stream().map(
+                                                (profile) -> modelMapper.map(
+                                                                profile,
+                                                                CustomerGetDto.class))
                                 .collect(Collectors.toList());
         }
 

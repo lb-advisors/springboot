@@ -49,6 +49,7 @@ public class Order {
     private BigDecimal price;
     private BigDecimal quantity;
 
+    private String customerPo;
     private BigDecimal totalPrice;
 
     private LocalDate deliveryDate;
