@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.ConstraintViolationException;
@@ -110,6 +111,18 @@ public class ControllerAdvisor {
                 "Invalid parameters");
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
+    }
+
+    // not being received by server - 413 error behaves like this
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(value = HttpStatus.PAYLOAD_TOO_LARGE)
+    public ResponseEntity<ErrorMessage> handleIllegalArgumentException(MaxUploadSizeExceededException ex) {
+        ErrorMessage message = new ErrorMessage(
+                HttpStatus.PAYLOAD_TOO_LARGE.value(),
+                ex.getMessage(),
+                "The file size is too large");
+
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

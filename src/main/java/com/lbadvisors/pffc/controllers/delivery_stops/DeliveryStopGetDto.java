@@ -9,6 +9,7 @@ public class DeliveryStopGetDto {
     private int id;
     private String driverName;
     private int priority;
+    private String customerPhone;
     private String deliveryAddress1;
     private String deliveryAddress2;
     private String deliveryAddress3;
