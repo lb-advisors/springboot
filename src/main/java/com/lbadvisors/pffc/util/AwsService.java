@@ -55,8 +55,8 @@ public class AwsService {
             s3Client.putObject(request,
                     RequestBody.fromInputStream(inputStream, inputStream.available()));
 
-        } catch (AwsServiceException | SdkClientException | IOException e) {
-            logger.error(e.getMessage());
+        } catch (AwsServiceException | SdkClientException | IOException ex) {
+            logger.error(ex.getMessage(), ex);
             throw new RuntimeException("Error uploading the image");
         }
 

@@ -1,7 +1,9 @@
 package com.lbadvisors.pffc.controllers.orders;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -32,8 +34,8 @@ public class OrderService {
     @Autowired
     ShipToService shipToService;
 
-    // @Autowired
-    // private EmailService emailService;
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -55,6 +57,7 @@ public class OrderService {
         Integer orderId = orderRepository.getNextOrderIdSequenceValue();
 
         List<Order> orders = orderPostDto.getOrderProfiles().stream().map(orderProfilePostDto -> {
+
             ProfileGetDto profileGetDto = profileService.findById(orderProfilePostDto.getProfileDid());
 
             Order order = modelMapper.map(orderProfilePostDto, Order.class);
@@ -90,9 +93,6 @@ public class OrderService {
 
         List<Order> savedOrders = orderRepository.saveAll(orders);
 
-        // send confirmation email
-        // emailService.sendEmail("oleblond@gmail.com", "Test", "Email Body");
-
         OrderGetDto orderGetDto = new OrderGetDto(
                 savedOrders.get(0).getOrderId(),
                 savedOrders.get(0).getCustomerId(),
@@ -102,9 +102,16 @@ public class OrderService {
                 savedOrders.get(0).getDeliveryDate(),
                 savedOrders.get(0).getShipToId(),
                 savedOrders.get(0).getShipToName(),
+                savedOrders.get(0).getTotalPrice(),
                 savedOrders.stream()
                         .map(order -> modelMapper.map(order, OrderProfileGetDto.class))
                         .collect(Collectors.toList()));
+
+        // send confirmation email
+        String customerEmail = orders.get(0).getCustomerEmail();
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("order", orderGetDto);
+        emailService.sendEmail(customerEmail, templateModel);
 
         return orderGetDto;
     }

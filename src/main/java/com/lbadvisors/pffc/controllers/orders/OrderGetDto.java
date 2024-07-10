@@ -27,6 +27,8 @@ public class OrderGetDto {
     private Integer shipToId;
     private String shipToName;
 
+    private BigDecimal totalPrice;
+
     private List<OrderProfileGetDto> profiles;
 }
 

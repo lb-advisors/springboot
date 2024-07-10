@@ -47,8 +47,8 @@ public class AppInfoController {
 
             // Format EST ZonedDateTime to human-readable string
             formattedDateTime = estDateTime.format(formatter) + " EST";
-        } catch (Exception e) {
-            logger.error(e.getMessage());
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
         }
 
         AppInfo appInfo = new AppInfo();
