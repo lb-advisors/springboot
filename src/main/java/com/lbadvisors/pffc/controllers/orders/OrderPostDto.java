@@ -25,7 +25,6 @@ public class OrderPostDto {
 
     private Integer shipToId;
 
-    @NotEmpty(message = "The purchase order cannot be empty")
     private String customerPo;
 
     @Positive(message = "The total price must be greater than zero")
