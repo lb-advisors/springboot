@@ -109,9 +109,11 @@ public class OrderService {
 
         // send confirmation email
         String customerEmail = orders.get(0).getCustomerEmail();
-        Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("order", orderGetDto);
-        emailService.sendEmail(customerEmail, templateModel);
+        if (customerEmail != null && customerEmail.length() > 0) {
+            Map<String, Object> templateModel = new HashMap<>();
+            templateModel.put("order", orderGetDto);
+            emailService.sendEmail(customerEmail, templateModel);
+        }
 
         return orderGetDto;
     }
