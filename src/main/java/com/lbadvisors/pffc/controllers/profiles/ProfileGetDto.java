@@ -1,8 +1,6 @@
 package com.lbadvisors.pffc.controllers.profiles;
 
 import java.util.List;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Data

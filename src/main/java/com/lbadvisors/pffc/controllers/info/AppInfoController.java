@@ -5,8 +5,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +19,6 @@ import org.springframework.core.env.Environment;
 @RequestMapping("/info")
 public class AppInfoController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppInfoController.class);
-
     @Autowired
     private Environment env;
 
@@ -32,7 +28,7 @@ public class AppInfoController {
 
         String formattedDateTime = "N/A";
 
-        try {
+        if (env.getProperty("BUILD_TIME") != null) {
             Instant instant = Instant.parse(env.getProperty("BUILD_TIME"));
 
             // Convert Instant to ZonedDateTime with UTC timezone
@@ -47,8 +43,6 @@ public class AppInfoController {
 
             // Format EST ZonedDateTime to human-readable string
             formattedDateTime = estDateTime.format(formatter) + " EST";
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
         }
 
         AppInfo appInfo = new AppInfo();
@@ -61,5 +55,4 @@ public class AppInfoController {
         return ResponseEntity.ok(appInfo);
 
     }
-
 }

@@ -49,10 +49,28 @@ public class OrderService {
         Integer shipToId = orderPostDto.getShipToId();
 
         // customers cannot place two orders for the same day / ship to
-        orderRepository.findFirstByCustomerIdAndDeliveryDateAndShipToId(customerID, deliveryDate,
-                shipToId).ifPresent(entity -> {
-                    throw new ResourceAlreadyExistsException("There is already an order for that day.");
-                });
+        List<Order> existingOrders = orderRepository.findByCustomerIdAndDeliveryDateAndShipToId(customerID,
+                deliveryDate,
+                shipToId);
+
+        if (existingOrders.size() > 0) {
+
+            OrderGetDto orderGetDto = new OrderGetDto(
+                    existingOrders.get(0).getOrderId(),
+                    existingOrders.get(0).getCustomerId(),
+                    existingOrders.get(0).getCustomerName(),
+                    existingOrders.get(0).getSalesRepName(),
+                    existingOrders.get(0).getSalesRepPhone(),
+                    existingOrders.get(0).getDeliveryDate(),
+                    existingOrders.get(0).getShipToId(),
+                    existingOrders.get(0).getShipToName(),
+                    existingOrders.get(0).getTotalPrice(),
+                    existingOrders.stream()
+                            .map(order -> modelMapper.map(order, OrderProfileGetDto.class))
+                            .collect(Collectors.toList()));
+
+            throw new ResourceAlreadyExistsException("There is already an order for that day.", orderGetDto);
+        }
 
         Integer orderId = orderRepository.getNextOrderIdSequenceValue();
 

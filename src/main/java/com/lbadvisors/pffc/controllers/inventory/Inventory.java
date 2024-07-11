@@ -16,7 +16,7 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comp_item_id")
-    int id;
+    Integer id;
 
     private String compDescription;
     private String packSize;

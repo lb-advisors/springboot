@@ -12,45 +12,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class ControllerAdvisor {
 
-    /*
-     * @ExceptionHandler(CityNotFoundException.class)
-     * public ResponseEntity<Object> handleCityNotFoundException(
-     * CityNotFoundException ex, WebRequest request) {
-     * 
-     * Map<String, Object> body = new LinkedHashMap<>();
-     * body.put("timestamp", .now());
-     * body.put("message", "City not found");
-     * 
-     * return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-     * }
-     * 
-     * @ExceptionHandler(NoDataFoundException.class)
-     * public ResponseEntity<Object> handleNodataFoundException(
-     * NoDataFoundException ex, WebRequest request) {
-     * 
-     * Map<String, Object> body = new LinkedHashMap<>();
-     * body.put("timestamp", LocalDateTime.now());
-     * body.put("message", "No cities found");
-     * 
-     * return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-     * }
-     */
-
     private static final Logger logger = LoggerFactory.getLogger(ControllerAdvisor.class);
 
-    @ExceptionHandler(value = { ResponseStatusException.class })
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorMessage> resourceNotFoundException(ResponseStatusException ex) {
+    @ExceptionHandler(value = { EntityNotFoundException.class })
+    public ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException ex) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),
@@ -59,8 +34,17 @@ public class ControllerAdvisor {
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = { ResourceAlreadyExistsException.class })
+    public ResponseEntity<ErrorMessage> handleeResourceAlreadyExistsException(ResourceAlreadyExistsException ex) {
+        ErrorMessage message = new ErrorMessage(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                "Resource already exists");
+
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorMessage> handleConstraintViolationException(ConstraintViolationException ex) {
 
         StringBuilder errroMessage = new StringBuilder();
@@ -79,8 +63,7 @@ public class ControllerAdvisor {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorMessage> handleConstraintViolationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorMessage> handleeMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -103,7 +86,6 @@ public class ControllerAdvisor {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorMessage> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
@@ -115,7 +97,6 @@ public class ControllerAdvisor {
 
     // not being received by server - 413 error behaves like this
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    @ResponseStatus(value = HttpStatus.PAYLOAD_TOO_LARGE)
     public ResponseEntity<ErrorMessage> handleIllegalArgumentException(MaxUploadSizeExceededException ex) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.PAYLOAD_TOO_LARGE.value(),
@@ -126,7 +107,6 @@ public class ControllerAdvisor {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(value = HttpStatus.CONFLICT)
     public ResponseEntity<ErrorMessage> handleIllegalArgumentException(DataIntegrityViolationException ex) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.CONFLICT.value(),
@@ -137,7 +117,6 @@ public class ControllerAdvisor {
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex) {
 
         ex.printStackTrace();

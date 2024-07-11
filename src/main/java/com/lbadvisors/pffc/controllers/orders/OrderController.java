@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lbadvisors.pffc.exception.ResourceAlreadyExistsException;
+
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
@@ -21,8 +23,13 @@ public class OrderController {
     @Operation(summary = "Create a new order")
     public ResponseEntity<OrderGetDto> createOrder(@RequestBody OrderPostDto orderPostDto) {
 
-        return new ResponseEntity<>(
-                orderService.saveOrder(orderPostDto), HttpStatus.OK);
+        try {
+            OrderGetDto orderGetDto = orderService.saveOrder(orderPostDto);
+            return new ResponseEntity<>(orderGetDto, HttpStatus.OK);
+
+        } catch (ResourceAlreadyExistsException ex) {
+            return new ResponseEntity<>(ex.getOrderDto(), HttpStatus.CONFLICT);
+        }
     }
 
 }

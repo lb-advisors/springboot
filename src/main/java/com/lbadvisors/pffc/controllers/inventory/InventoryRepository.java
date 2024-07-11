@@ -17,7 +17,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
             "LOWER(i.compDescription) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(i.packSize) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(i.unitType) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "CAST(i.activePrice AS string) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+            "CAST(i.activePrice AS string) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "CAST(i.id AS string) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<Inventory> searchByMultipleFields(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     // eContaining(String name, Pageable pageable);
