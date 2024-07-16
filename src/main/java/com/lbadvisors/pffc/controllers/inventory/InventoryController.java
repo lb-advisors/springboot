@@ -18,10 +18,9 @@ public class InventoryController {
 
     @GetMapping(value = "/inventory")
     @Operation(summary = "Get entire inventory")
-    public ResponseEntity<Page<Inventory>> getAllInventory(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String search) {
-        return new ResponseEntity<Page<Inventory>>(
-                inventoryService.getAllInventory(page, size, search), HttpStatus.OK);
+    public ResponseEntity<Page<Inventory>> getAllInventory(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        return new ResponseEntity<Page<Inventory>>(inventoryService.getAllInventory(page, size, search), HttpStatus.OK);
     }
 
 }

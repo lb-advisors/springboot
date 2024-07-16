@@ -1,5 +1,7 @@
 package com.lbadvisors.pffc.controllers.inventory;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,13 +19,8 @@ public class InventoryService {
         ModelMapper modelMapper;
 
         public Page<Inventory> getAllInventory(int page, int size, String search) {
-
-                if (search == null || search.isEmpty()) {
-                        return inventoryRepository.findAll(PageRequest.of(page, size));
-                } else {
-                        Pageable pageable = PageRequest.of(page, size);
-                        return inventoryRepository.searchByMultipleFields(search, pageable);
-                }
+                Pageable pageable = PageRequest.of(page, size);
+                return inventoryRepository.searchInventoryItems(search, pageable);
         }
 
 }

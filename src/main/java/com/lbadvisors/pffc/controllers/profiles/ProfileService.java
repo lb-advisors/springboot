@@ -1,5 +1,6 @@
 package com.lbadvisors.pffc.controllers.profiles;
 
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,6 +61,13 @@ public class ProfileService {
                                         ProfileDto profileDto = modelMapper.map(
                                                         profile,
                                                         ProfileDto.class);
+
+                                        // TODO: put real logic fo3 profile
+                                        if (profile.getSalesPrice().setScale(0, RoundingMode.FLOOR).intValue()
+                                                        % 2 != 0) {
+                                                profileDto.setSpecial(true);
+                                        }
+
                                         return profileDto;
                                 })
                                 .collect(Collectors.toList());

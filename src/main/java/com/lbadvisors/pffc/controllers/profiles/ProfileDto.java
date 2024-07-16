@@ -15,4 +15,7 @@ public class ProfileDto {
     BigDecimal packSizePd;
     BigDecimal salesPrice;
 
+    @JsonProperty("isSpecial")
+    boolean isSpecial;
+
 }
