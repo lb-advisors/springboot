@@ -1,4 +1,4 @@
-name: PROD - Docker image pushed to render.com
+name: UAT - Docker image pushed to render.com
 
 on:
   push:
