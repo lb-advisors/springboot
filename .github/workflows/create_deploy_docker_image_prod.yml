@@ -1,4 +1,4 @@
-name: Docker image pushed to render.com
+name: UAT - Docker image pushed to render.com
 
 on:
   # Allows you to run this workflow manually from the Actions tab
