@@ -25,16 +25,11 @@ public class ProfileService {
 
         public ProfileGetDto findById(Integer profileDid) {
 
-                Profile profile = this.profileRepository.findById(profileDid).orElseThrow(
-                                () -> new EntityNotFoundException("Entity with id " + profileDid + " not found"));
+                Profile profile = this.profileRepository.findById(profileDid).orElseThrow(() -> new EntityNotFoundException("Entity with id " + profileDid + " not found"));
 
-                ProfileGetDto profileGetDto = modelMapper.map(
-                                profile,
-                                ProfileGetDto.class);
+                ProfileGetDto profileGetDto = modelMapper.map(profile, ProfileGetDto.class);
 
-                ProfileDto profileDto = modelMapper.map(
-                                profile,
-                                ProfileDto.class);
+                ProfileDto profileDto = modelMapper.map(profile, ProfileDto.class);
 
                 profileGetDto.setProfiles(Arrays.asList(profileDto));
 
@@ -56,35 +51,29 @@ public class ProfileService {
                 profileGetDto.setSalesRepName(profiles.get(0).getSalesRepName());
                 profileGetDto.setSalesRepPhone(profiles.get(0).getSalesRepPhone());
 
-                List<ProfileDto> profileDtos = profiles.stream().map(
-                                (profile) -> {
-                                        ProfileDto profileDto = modelMapper.map(
-                                                        profile,
-                                                        ProfileDto.class);
+                profileGetDto.setCompanyId(profiles.get(0).getCompanyId());
+                profileGetDto.setCompanyName(profiles.get(0).getCompanyName());
 
-                                        // TODO: put real logic fo3 profile
-                                        if (profile.getSalesPrice().setScale(0, RoundingMode.FLOOR).intValue()
-                                                        % 2 != 0) {
-                                                profileDto.setSpecial(true);
-                                        }
+                List<ProfileDto> profileDtos = profiles.stream().map((profile) -> {
+                        ProfileDto profileDto = modelMapper.map(profile, ProfileDto.class);
 
-                                        return profileDto;
-                                })
-                                .collect(Collectors.toList());
+                        // TODO: put real logic fo3 profile
+                        if (profile.getSalesPrice().setScale(0, RoundingMode.FLOOR).intValue() % 2 != 0) {
+                                profileDto.setSpecial(true);
+                        }
+
+                        return profileDto;
+                }).collect(Collectors.toList());
 
                 profileGetDto.setProfiles(profileDtos);
 
                 List<ShipTo> shipTos = shipToTRepository.findByCustomerId(customerId);
 
                 if (shipTos.size() > 0) {
-                        List<ShipToGetDto> shipToGetDtos = shipTos.stream().map(
-                                        (shipTo) -> {
-                                                ShipToGetDto shipToGetDto = modelMapper.map(
-                                                                shipTo,
-                                                                ShipToGetDto.class);
-                                                return shipToGetDto;
-                                        })
-                                        .collect(Collectors.toList());
+                        List<ShipToGetDto> shipToGetDtos = shipTos.stream().map((shipTo) -> {
+                                ShipToGetDto shipToGetDto = modelMapper.map(shipTo, ShipToGetDto.class);
+                                return shipToGetDto;
+                        }).collect(Collectors.toList());
                         profileGetDto.setShipTos(shipToGetDtos);
 
                 }
@@ -93,21 +82,15 @@ public class ProfileService {
         }
 
         /*
-         * public List<SalesRepGetDto> getAllSalesRepNames() {
-         * return this.profileRepository.findDistinctSalesRepNames().stream().map(
-         * (profile) -> modelMapper.map(
-         * profile,
-         * SalesRepGetDto.class))
-         * .collect(Collectors.toList());
-         * }
+         * public List<SalesRepGetDto> getAllSalesRepNames() { return
+         * this.profileRepository.findDistinctSalesRepNames().stream().map( (profile) ->
+         * modelMapper.map( profile, SalesRepGetDto.class))
+         * .collect(Collectors.toList()); }
          * 
-         * public List<CustomerGetDto> getAllCustomers(String salesRepName) {
-         * return profileRepository.findDistinctCustomerIds(salesRepName).stream().map(
-         * (profile) -> modelMapper.map(
-         * profile,
-         * CustomerGetDto.class))
-         * .collect(Collectors.toList());
-         * }
+         * public List<CustomerGetDto> getAllCustomers(String salesRepName) { return
+         * profileRepository.findDistinctCustomerIds(salesRepName).stream().map(
+         * (profile) -> modelMapper.map( profile, CustomerGetDto.class))
+         * .collect(Collectors.toList()); }
          */
 
         // @Override
