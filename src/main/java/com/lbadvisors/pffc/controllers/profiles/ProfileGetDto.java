@@ -13,6 +13,9 @@ public class ProfileGetDto {
     private String salesRepName;
     private String salesRepPhone;
 
+    private Integer companyId;
+    private String companyName;
+
     // private String profileDid;
     private List<ProfileDto> profiles;
 
