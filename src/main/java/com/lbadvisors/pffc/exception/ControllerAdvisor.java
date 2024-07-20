@@ -26,20 +26,14 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(value = { EntityNotFoundException.class })
     public ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException ex) {
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
-                "Resource Not Found");
+        ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND.value(), ex.getMessage(), "Resource Not Found");
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = { ResourceAlreadyExistsException.class })
     public ResponseEntity<ErrorMessage> handleeResourceAlreadyExistsException(ResourceAlreadyExistsException ex) {
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.CONFLICT.value(),
-                ex.getMessage(),
-                "Resource already exists");
+        ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT.value(), ex.getMessage(), "Resource already exists");
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.CONFLICT);
     }
@@ -52,12 +46,9 @@ public class ControllerAdvisor {
             errroMessage.append(violation.getMessage()).append("; ");
         });
 
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.BAD_REQUEST.value(),
-                errroMessage.toString(),
-                "Constraints violation");
+        ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), errroMessage.toString(), "Constraints violation");
 
-        logger.error(message.getMessage());
+        logger.error(message.getMessage(), ex);
 
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
@@ -72,25 +63,16 @@ public class ControllerAdvisor {
             errors.put(fieldName, errorMessage);
         });
 
-        String errrorMessage = errors.entrySet()
-                .stream()
-                .map(entry -> entry.getValue())
-                .collect(Collectors.joining("; "));
+        String errrorMessage = errors.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.joining("; "));
 
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.BAD_REQUEST.value(),
-                errrorMessage,
-                "Invalid parameters");
+        ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), errrorMessage, "Invalid parameters");
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorMessage> handleIllegalArgumentException(IllegalArgumentException ex) {
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
-                "Invalid parameters");
+        ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), "Invalid parameters");
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
     }
@@ -98,20 +80,14 @@ public class ControllerAdvisor {
     // not being received by server - 413 error behaves like this
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorMessage> handleIllegalArgumentException(MaxUploadSizeExceededException ex) {
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.PAYLOAD_TOO_LARGE.value(),
-                ex.getMessage(),
-                "The file size is too large");
+        ErrorMessage message = new ErrorMessage(HttpStatus.PAYLOAD_TOO_LARGE.value(), ex.getMessage(), "The file size is too large");
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorMessage> handleIllegalArgumentException(DataIntegrityViolationException ex) {
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.CONFLICT.value(),
-                "Data integrity violation occurred: " + ex.getMostSpecificCause().getMessage(),
-                "Invalid parameters");
+        ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT.value(), "Data integrity violation occurred: " + ex.getMostSpecificCause().getMessage(), "Invalid parameters");
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.CONFLICT);
     }
@@ -121,10 +97,7 @@ public class ControllerAdvisor {
 
         ex.printStackTrace();
 
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ex.getMessage(),
-                "Runtime exception");
+        ErrorMessage message = new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), "Runtime exception");
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
