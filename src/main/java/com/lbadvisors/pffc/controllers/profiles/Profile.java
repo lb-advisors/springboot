@@ -36,6 +36,8 @@ public class Profile {
     private Integer companyId;
     private String companyName;
 
+    private boolean isSpecial;
+
     // @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch =
     // FetchType.LAZY)
     // @OneToMany(targetEntity = ShipTo.class, cascade = CascadeType.ALL, fetch =

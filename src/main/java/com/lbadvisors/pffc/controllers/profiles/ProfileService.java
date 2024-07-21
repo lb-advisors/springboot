@@ -58,9 +58,9 @@ public class ProfileService {
                         ProfileDto profileDto = modelMapper.map(profile, ProfileDto.class);
 
                         // TODO: put real logic fo3 profile
-                        if (profile.getPrice().setScale(0, RoundingMode.FLOOR).intValue() % 2 != 0) {
-                                profileDto.setSpecial(true);
-                        }
+                        // if (profile.getPrice().setScale(0, RoundingMode.FLOOR).intValue() % 2 != 0) {
+                        // profileDto.setSpecial(true);
+                        // }
 
                         return profileDto;
                 }).collect(Collectors.toList());
