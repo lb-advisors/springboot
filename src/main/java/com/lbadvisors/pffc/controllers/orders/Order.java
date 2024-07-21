@@ -9,6 +9,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -23,9 +26,7 @@ import lombok.Data;
 @Data
 @DynamicUpdate
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "`order`", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "customerId", "deliveryDate", "shipToId" })
-})
+@Table(name = "`order`", uniqueConstraints = { @UniqueConstraint(columnNames = { "customerId", "deliveryDate", "shipToId" }) })
 
 public class Order {
 
@@ -46,7 +47,9 @@ public class Order {
     private String profileDescription;
     private String unitType;
     private BigDecimal packSize;
+
     private BigDecimal price;
+
     private BigDecimal quantity;
 
     private String customerPo;

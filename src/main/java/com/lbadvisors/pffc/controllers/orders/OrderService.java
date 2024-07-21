@@ -80,10 +80,10 @@ public class OrderService {
             order.setSalesRepName(profileGetDto.getSalesRepName());
             order.setSalesRepPhone(profileGetDto.getSalesRepPhone());
 
-            order.setPackSize(profileGetDto.getProfiles().get(0).getPackSizePd());
+            order.setPackSize(profileGetDto.getProfiles().get(0).getPackSize());
             order.setProfileDescription(profileGetDto.getProfiles().get(0).getProfileDescription());
-            order.setPrice(profileGetDto.getProfiles().get(0).getSalesPrice());
-            order.setUnitType(profileGetDto.getProfiles().get(0).getUnitTypePd());
+            order.setPrice(profileGetDto.getProfiles().get(0).getPrice());
+            order.setUnitType(profileGetDto.getProfiles().get(0).getUnitType());
 
             if (orderPostDto.getShipToId() != null) {
                 ShipToGetDto shipToGetDto = shipToService.findById(orderPostDto.getShipToId());

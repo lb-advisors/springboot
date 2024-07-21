@@ -40,6 +40,7 @@ class OrderProfileGetDto {
     private String profileDescription;
     private String unitType;
     private BigDecimal packSize;
+    @JsonProperty("salesPrice")
     private BigDecimal price;
     private BigDecimal quantity;
 }
