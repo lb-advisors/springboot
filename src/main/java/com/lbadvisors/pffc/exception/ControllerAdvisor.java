@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -90,6 +91,14 @@ public class ControllerAdvisor {
         ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT.value(), "Data integrity violation occurred: " + ex.getMostSpecificCause().getMessage(), "Invalid parameters");
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorMessage> handleBadCredentialsException(BadCredentialsException ex) {
+
+        ErrorMessage message = new ErrorMessage(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), "Bad credentials");
+
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)

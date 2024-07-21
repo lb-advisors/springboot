@@ -7,8 +7,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
-@EnableSpringDataWebSupport(pageSerializationMode = PageSerializationMode.VIA_DTO)
+//@Configuration
+//@EnableSpringDataWebSupport(pageSerializationMode = PageSerializationMode.VIA_DTO)
 public class WebConfiguration implements WebMvcConfigurer {
 
     @Override
