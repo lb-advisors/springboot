@@ -2,6 +2,8 @@ package com.lbadvisors.pffc.controllers.profiles;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -23,9 +25,9 @@ public class Profile {
     private Integer compItemId;
     private String profileDescription;
     private String profileInstruction;
-    private String unitTypePd;
-    private BigDecimal packSizePd;
-    private BigDecimal salesPrice;
+    private String unitType;
+    private BigDecimal packSize;
+    private BigDecimal price;
     private String salesRepEmail;
     private String customerContactName;
     private String customerCell;
@@ -33,6 +35,8 @@ public class Profile {
 
     private Integer companyId;
     private String companyName;
+
+    private boolean isSpecial;
 
     // @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, fetch =
     // FetchType.LAZY)

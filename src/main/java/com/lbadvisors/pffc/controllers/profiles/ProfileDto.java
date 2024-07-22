@@ -11,9 +11,11 @@ public class ProfileDto {
     Integer profileDid;
 
     private String profileDescription;
-    private String unitTypePd;
-    BigDecimal packSizePd;
-    BigDecimal salesPrice;
+    private String unitType;
+    BigDecimal packSize;
+
+    @JsonProperty("salesPrice")
+    BigDecimal price;
 
     @JsonProperty("isSpecial")
     boolean isSpecial;

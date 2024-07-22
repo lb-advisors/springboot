@@ -14,7 +14,7 @@ public interface DeliveryStopRepository extends JpaRepository<DeliveryStop, Inte
 
     List<DeliveryStop> findByDriverNameAndDeliveryDateOrderByPriorityAsc(String driverName, LocalDate deliveryDate);
 
-    @Query("SELECT DISTINCT NEW com.lbadvisors.pffc.controllers.drivers.DriverGetDto(c.driverName) FROM DeliveryStop c")
+    @Query("SELECT DISTINCT NEW com.lbadvisors.pffc.controllers.drivers.DriverGetDto(c.driverName) FROM DeliveryStop c ORDER BY c.driverName")
     List<DriverGetDto> findDistinctDriverNames();
 
 }

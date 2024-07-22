@@ -48,12 +48,16 @@ public class InventoryRepositoryCustomImpl implements InventoryRepositoryCustom 
             String[] words = search.split("\\s+");
             for (String word : words) {
 
+                // for the price, remove trailing zeros
+                String activePriceWord = word.contains(".") ? word.replaceAll("0*$", "").replaceAll("\\.$", "") : word;
+                activePriceWord = "%" + activePriceWord + "%";
+
                 String escapedWord = "%" + escapeSpecialChars(word.toLowerCase()) + "%";
                 Predicate descriptionPredicate = cb.like(cb.lower(inventoryRoot.get("compDescription")), escapedWord, '\\');
                 Predicate description2Predicate = cb.like(cb.lower(inventoryRoot.get("packSize")), escapedWord, '\\');
                 Predicate description3Predicate = cb.like(cb.lower(inventoryRoot.get("unitType")), escapedWord, '\\');
-                Predicate description4Predicate = cb.like(cb.toString(inventoryRoot.get("activePrice")), escapedWord, '\\');
-                // TODO: should we really search by ID?
+                Predicate description4Predicate = cb.like(cb.concat("$", cb.toString(inventoryRoot.get("activePrice"))), activePriceWord, '\\'); // TODO: should we really search by
+                                                                                                                                                 // ID?
                 Predicate description5Predicate = cb.like(cb.toString(inventoryRoot.get("id")), escapedWord, '\\');
 
                 predicates.add(cb.or(descriptionPredicate, description2Predicate, description3Predicate, description4Predicate, description5Predicate));

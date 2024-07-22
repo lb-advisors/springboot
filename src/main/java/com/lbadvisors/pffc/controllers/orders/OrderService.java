@@ -49,32 +49,21 @@ public class OrderService {
         Integer shipToId = orderPostDto.getShipToId();
 
         // customers cannot place two orders for the same day / ship to
-        List<Order> existingOrders = orderRepository.findByCustomerIdAndDeliveryDateAndShipToId(customerID,
-                deliveryDate,
-                shipToId);
+        List<Order> existingOrders = orderRepository.findByCustomerIdAndDeliveryDateAndShipToId(customerID, deliveryDate, shipToId);
 
         if (existingOrders.size() > 0) {
 
-            OrderGetDto orderGetDto = new OrderGetDto(
-                    existingOrders.get(0).getOrderId(),
-                    existingOrders.get(0).getCustomerId(),
-                    existingOrders.get(0).getCustomerName(),
-                    existingOrders.get(0).getSalesRepName(),
-                    existingOrders.get(0).getSalesRepPhone(),
-                    existingOrders.get(0).getDeliveryDate(),
-                    existingOrders.get(0).getShipToId(),
-                    existingOrders.get(0).getShipToName(),
-                    existingOrders.get(0).getTotalPrice(),
-                    existingOrders.stream()
-                            .map(order -> modelMapper.map(order, OrderProfileGetDto.class))
-                            .collect(Collectors.toList()));
+            OrderGetDto orderGetDto = new OrderGetDto(existingOrders.get(0).getOrderId(), existingOrders.get(0).getCustomerId(), existingOrders.get(0).getCustomerName(),
+                    existingOrders.get(0).getSalesRepName(), existingOrders.get(0).getSalesRepPhone(), existingOrders.get(0).getDeliveryDate(), existingOrders.get(0).getShipToId(),
+                    existingOrders.get(0).getShipToName(), existingOrders.get(0).getCustomerPo(), existingOrders.get(0).getTotalPrice(),
+                    existingOrders.stream().map(order -> modelMapper.map(order, OrderProfileGetDto.class)).collect(Collectors.toList()));
 
             throw new ResourceAlreadyExistsException("There is already an order for that day.", orderGetDto);
         }
 
         Integer orderId = orderRepository.getNextOrderIdSequenceValue();
 
-        List<Order> orders = orderPostDto.getOrderProfiles().stream().map(orderProfilePostDto -> {
+        List<Order> orders = orderPostDto.getProfiles().stream().map(orderProfilePostDto -> {
 
             ProfileGetDto profileGetDto = profileService.findById(orderProfilePostDto.getProfileDid());
 
@@ -85,16 +74,16 @@ public class OrderService {
             order.setCustomerId(orderPostDto.getCustomerId());
             order.setDeliveryDate(orderPostDto.getDeliveryDate());
             order.setShipToId(orderPostDto.getShipToId());
+            order.setCustomerPo(orderPostDto.getCustomerPo());
             order.setTotalPrice(orderPostDto.getTotalPrice());
             order.setCustomerName(profileGetDto.getCustomerName());
             order.setCustomerEmail(profileGetDto.getCustomerEmail());
             order.setSalesRepName(profileGetDto.getSalesRepName());
             order.setSalesRepPhone(profileGetDto.getSalesRepPhone());
-
-            order.setPackSize(profileGetDto.getProfiles().get(0).getPackSizePd());
+            order.setPackSize(profileGetDto.getProfiles().get(0).getPackSize());
             order.setProfileDescription(profileGetDto.getProfiles().get(0).getProfileDescription());
-            order.setPrice(profileGetDto.getProfiles().get(0).getSalesPrice());
-            order.setUnitType(profileGetDto.getProfiles().get(0).getUnitTypePd());
+            order.setPrice(profileGetDto.getProfiles().get(0).getPrice());
+            order.setUnitType(profileGetDto.getProfiles().get(0).getUnitType());
 
             if (orderPostDto.getShipToId() != null) {
                 ShipToGetDto shipToGetDto = shipToService.findById(orderPostDto.getShipToId());
@@ -111,19 +100,10 @@ public class OrderService {
 
         List<Order> savedOrders = orderRepository.saveAll(orders);
 
-        OrderGetDto orderGetDto = new OrderGetDto(
-                savedOrders.get(0).getOrderId(),
-                savedOrders.get(0).getCustomerId(),
-                savedOrders.get(0).getCustomerName(),
-                savedOrders.get(0).getSalesRepName(),
-                savedOrders.get(0).getSalesRepPhone(),
-                savedOrders.get(0).getDeliveryDate(),
-                savedOrders.get(0).getShipToId(),
-                savedOrders.get(0).getShipToName(),
-                savedOrders.get(0).getTotalPrice(),
-                savedOrders.stream()
-                        .map(order -> modelMapper.map(order, OrderProfileGetDto.class))
-                        .collect(Collectors.toList()));
+        OrderGetDto orderGetDto = new OrderGetDto(savedOrders.get(0).getOrderId(), savedOrders.get(0).getCustomerId(), savedOrders.get(0).getCustomerName(),
+                savedOrders.get(0).getSalesRepName(), savedOrders.get(0).getSalesRepPhone(), savedOrders.get(0).getDeliveryDate(), savedOrders.get(0).getShipToId(),
+                savedOrders.get(0).getShipToName(), savedOrders.get(0).getCustomerPo(), savedOrders.get(0).getTotalPrice(),
+                savedOrders.stream().map(order -> modelMapper.map(order, OrderProfileGetDto.class)).collect(Collectors.toList()));
 
         // send confirmation email
         String customerEmail = orders.get(0).getCustomerEmail();

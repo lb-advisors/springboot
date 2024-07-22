@@ -31,9 +31,9 @@ public class OrderPostDto {
     @Max(value = 10000, message = "The total prcie must be less than $10,000")
     private BigDecimal totalPrice;
 
-    @NotEmpty
+    @NotEmpty(message = "The list of profiles cannot be empty")
     @Valid
-    private List<OrderProfilePostDto> orderProfiles;
+    private List<OrderProfilePostDto> profiles;
 }
 
 @Value
