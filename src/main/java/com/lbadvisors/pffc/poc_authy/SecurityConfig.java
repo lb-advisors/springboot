@@ -54,7 +54,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests((authz) -> authz.requestMatchers("/#########/**").permitAll().requestMatchers("/auth/login/**").permitAll().requestMatchers("/info/**")
+                .authorizeHttpRequests((authz) -> authz.requestMatchers("/#########/**").permitAll().requestMatchers("/auth/**").permitAll().requestMatchers("/info/**")
                         .hasAuthority(ERole.ROLE_ADMIN.name()).requestMatchers("/swagger-ui/**").permitAll().requestMatchers("/v3/**").permitAll().anyRequest().authenticated())
                 .exceptionHandling(exceptionHandlingConfigurer -> configureExceptionHandling(exceptionHandlingConfigurer))
 
