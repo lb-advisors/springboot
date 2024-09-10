@@ -9,6 +9,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,6 +27,6 @@ public class Role {
     @Enumerated(EnumType.STRING)
     private ERole name;
 
-    @ManyToMany(targetEntity = User.class, mappedBy = "roles", cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = User.class, mappedBy = "roles", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<User> users;
 }

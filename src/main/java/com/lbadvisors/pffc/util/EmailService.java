@@ -48,12 +48,36 @@ public class EmailService {
             }
 
             // Process the HTML template into a String
-            String htmlContent = htmlTemplateEngine.process("order-email-template",
-                    new Context(null, templateModel));
+            String htmlContent = htmlTemplateEngine.process("order-email-template", new Context(null, templateModel));
 
             // Process the text template into a String
-            String textContent = textTemplateEngine.process("order-email-template",
-                    new Context(null, templateModel));
+            String textContent = textTemplateEngine.process("order-email-template", new Context(null, templateModel));
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(textContent, htmlContent);
+            helper.addInline("logo", new ClassPathResource("static/logo.png"));
+
+            mailSender.send(message);
+
+        } catch (MailException | MessagingException ex) {
+            logger.error("Cannot send email", ex);
+        }
+    }
+
+    public void sendResetPasswordEmail(String to, Map<String, Object> templateModel) {
+        try {
+            to = "oleblond@gmail.com";
+
+            String subject = "Password reset";
+
+            // Process the HTML template into a String
+            String htmlContent = htmlTemplateEngine.process("reset-password-email-template", new Context(null, templateModel));
+
+            // Process the text template into a String
+            String textContent = textTemplateEngine.process("reset-password-email-template", new Context(null, templateModel));
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -77,8 +101,7 @@ public class EmailService {
         return createTemplateEngine(templateEngine, TemplateMode.TEXT, ".txt");
     }
 
-    private TemplateEngine createTemplateEngine(TemplateEngine templateEngine, TemplateMode templateMode,
-            String suffix) {
+    private TemplateEngine createTemplateEngine(TemplateEngine templateEngine, TemplateMode templateMode, String suffix) {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setTemplateMode(templateMode);
         templateResolver.setPrefix("templates/");

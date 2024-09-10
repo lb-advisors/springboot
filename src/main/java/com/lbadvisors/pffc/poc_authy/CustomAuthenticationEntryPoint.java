@@ -7,7 +7,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lbadvisors.pffc.exception.ErrorMessage;
+import com.lbadvisors.pffc.exception.ResponseMessage;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +30,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        ErrorMessage message = new ErrorMessage(HttpServletResponse.SC_UNAUTHORIZED, msg, "You are not authorized to access " + request.getRequestURI());
+        ResponseMessage message = new ResponseMessage(HttpServletResponse.SC_UNAUTHORIZED, msg, "You are not authorized to access " + request.getRequestURI());
         response.getOutputStream().println(objectMapper.writeValueAsString(message));
 
     }

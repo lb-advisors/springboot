@@ -2,6 +2,7 @@ package com.lbadvisors.pffc.poc_authy;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,17 +42,21 @@ public class JwtUtils {
         return (List<String>) claims.get("roles"); // Suppress warning if cast is known to be safe
     }
 
-    public String generateJwtToken(Authentication authentication) {
+    public String generateAuthenticatedToken(Authentication authentication) {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         Map<String, Object> claims = new HashMap<>();
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
         List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        claims.put("roles", roles); // TOOO: remove
-
+        claims.put("roles", roles);
         return Jwts.builder().subject(userDetails.getUsername()).claims(claims).issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + Long.parseLong(jwtProperties.getJwtExpirationInMs()))).signWith(key).compact();
+    }
+
+    public String generateResetPasswordToken(String username) {
+        return Jwts.builder().subject(username).issuedAt(new Date()).expiration(new Date((new Date()).getTime() + Long.parseLong(jwtProperties.getJwtExpirationInMs())))
+                .signWith(key).compact();
     }
 
     public String getUserNameFromJwtToken(String token) {
@@ -67,12 +72,12 @@ public class JwtUtils {
                 .collect(Collectors.toList()); // Collect into List<SimpleGrantedAuthority>
     }
 
-    public boolean validateJwtToken(String authToken) {
+    public boolean validateJwtToken(String authToken) throws BadCredentialsException, NonceExpiredException {
         try {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(authToken);
             return true;
-        } catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
-            throw new BadCredentialsException("INVALID_CREDENTIALS", ex);
+        } catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+            throw new SignatureException("Invalid token", ex);
         } catch (ExpiredJwtException ex) {
             throw new NonceExpiredException("Token has Expired", ex);
         }

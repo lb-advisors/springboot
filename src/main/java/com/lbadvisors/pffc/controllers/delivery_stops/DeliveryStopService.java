@@ -33,33 +33,22 @@ public class DeliveryStopService {
         @Autowired
         AwsProperties awsProperties;
 
-        public List<DeliveryStopGetDto> findByDriverNameAndDeliveryDate(String driverName,
-                        LocalDate deliveryDate) {
+        public List<DeliveryStopGetDto> findByDriverNameAndDeliveryDate(String driverName, LocalDate deliveryDate) {
 
-                return this.deliveryStopsRepository.findByDriverNameAndDeliveryDateOrderByPriorityAsc(driverName,
-                                deliveryDate).stream().map(
-                                                (deliveryStop) -> {
-                                                        DeliveryStopGetDto deliveryStopGetDto = modelMapper.map(
-                                                                        deliveryStop,
-                                                                        DeliveryStopGetDto.class);
-                                                        if (deliveryStop.getS3FileKey() != null && deliveryStop
-                                                                        .getS3FileKey().length() > 0) {
-                                                                deliveryStopGetDto.setFileUrl(awsProperties
-                                                                                .getEndpointUrl()
-                                                                                + deliveryStop.getS3FileKey());
-                                                        }
-                                                        return deliveryStopGetDto;
-                                                })
-                                .collect(Collectors.toList());
+                List<DeliveryStopGetDto> l = this.deliveryStopsRepository.findByDriverNameAndDeliveryDateOrderByPriorityAsc(driverName, deliveryDate).stream()
+                                .map((deliveryStop) -> {
+
+                                        return new DeliveryStopGetDto();
+                                }).collect(Collectors.toList());
+
+                return l;
         }
 
         public DeliveryStopGetDto uploadPhoto(int deliveryStopId, MultipartFile multipartFile) {
 
                 // TODO: compress the image
-                DeliveryStop deliveryStop = this.deliveryStopsRepository.findById(
-                                deliveryStopId)
-                                .orElseThrow(() -> new EntityNotFoundException(
-                                                "Entity with id " + deliveryStopId + " not found"));
+                DeliveryStop deliveryStop = this.deliveryStopsRepository.findById(deliveryStopId)
+                                .orElseThrow(() -> new EntityNotFoundException("Entity with id " + deliveryStopId + " not found"));
 
                 String driverName = deliveryStop.getDriverName().replaceAll("[^a-zA-Z0-9-_.~]", "_");
                 String formattedDeliveryStopId = String.format("%010d", deliveryStopId);
@@ -71,10 +60,7 @@ public class DeliveryStopService {
                 SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
                 SimpleDateFormat sdfTime = new SimpleDateFormat("hh-mm-ss-SSS");
 
-                String s3FileKey = String.format("%s/%s/%s-%s.%s",
-                                driverName, sdfDate.format(new Date()),
-                                formattedDeliveryStopId, sdfTime.format(new Date()),
-                                fileExtension);
+                String s3FileKey = String.format("%s/%s/%s-%s.%s", driverName, sdfDate.format(new Date()), formattedDeliveryStopId, sdfTime.format(new Date()), fileExtension);
 
                 awsService.uploadFile(s3FileKey, multipartFile);
 
