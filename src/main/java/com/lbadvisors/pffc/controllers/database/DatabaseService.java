@@ -112,7 +112,7 @@ public class DatabaseService {
 
     @Transactional
     public void bulkInsert(List<Profile> profiles) {
-        int batchSize = 200;
+        int batchSize = 50;
         for (int i = 0; i < profiles.size(); i++) {
             entityManager.persist(profiles.get(i));
 

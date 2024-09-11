@@ -48,14 +48,14 @@ public class DatabaseController {
             throws IOException, CsvValidationException {
 
         if (multipartFile.isEmpty()) {
-            StatusMessage message = new StatusMessage(HttpStatus.BAD_REQUEST.value(), "Empty file.", "The uploaded file is empty.");
+            StatusMessage message = new StatusMessage(HttpStatus.BAD_REQUEST.value(), "Empty file", "The uploaded file is empty");
             return new ResponseEntity<StatusMessage>(message, HttpStatus.BAD_REQUEST);
         }
 
         // Check MIME type (content type)
         String contentType = multipartFile.getContentType();
         if (!"text/csv".equals(contentType)) {
-            StatusMessage message = new StatusMessage(HttpStatus.BAD_REQUEST.value(), "Invalid file type.", "Invalid file type. Please upload a CSV file.");
+            StatusMessage message = new StatusMessage(HttpStatus.BAD_REQUEST.value(), "Invalid file type", "Invalid file type. Please upload a CSV file.");
             return new ResponseEntity<StatusMessage>(message, HttpStatus.BAD_REQUEST);
         }
 
