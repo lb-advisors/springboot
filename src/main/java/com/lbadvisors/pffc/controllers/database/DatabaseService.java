@@ -72,7 +72,6 @@ public class DatabaseService {
             String[] values;
             while ((values = csvReader.readNext()) != null) {
                 try {
-                    System.out.println(values[0]);
                     Profile profile = new Profile();
                     if (values[0].length() > 0)
                         profile.setProfileDid(Integer.parseInt(values[0]));
@@ -101,19 +100,19 @@ public class DatabaseService {
                         profile.setCompanyId(Integer.parseInt(values[17]));
 
                     profiles.add(profile);
+
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
         }
         profileRepository.deleteAllProfilesInBulk();
-        // profileRepository.saveAll(profiles);
         bulkInsert(profiles);
     }
 
     @Transactional
     public void bulkInsert(List<Profile> profiles) {
-        int batchSize = 50;
+        int batchSize = 200;
         for (int i = 0; i < profiles.size(); i++) {
             entityManager.persist(profiles.get(i));
 

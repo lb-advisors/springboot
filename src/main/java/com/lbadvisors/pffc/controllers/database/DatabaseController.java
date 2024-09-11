@@ -3,7 +3,6 @@ package com.lbadvisors.pffc.controllers.database;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.lbadvisors.pffc.exception.StatusMessage;
 import com.opencsv.exceptions.CsvValidationException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,9 +28,6 @@ public class DatabaseController {
 
     @Autowired
     private DatabaseService databaseService;
-
-    @Autowired
-    private Tika tika;
 
     @GetMapping("/download/orders")
     @Operation(summary = "Download entire order table as a CSV file")
@@ -45,16 +42,21 @@ public class DatabaseController {
     }
 
     @PostMapping(value = "/upload/profiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadProfilesFile(
-            @Parameter(description = "CSV file with list of all profiles", required = true) @RequestParam("file") MultipartFile multipartFile) {
+    @Operation(summary = "Upload CSV file to refresh the profile_child table")
+    public ResponseEntity<StatusMessage> uploadProfilesFile(
+            @Parameter(description = "CSV file with list of all profiles", required = true) @RequestParam("file") MultipartFile multipartFile)
+            throws IOException, CsvValidationException {
+
         if (multipartFile.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please upload a CSV file!");
+            StatusMessage message = new StatusMessage(HttpStatus.BAD_REQUEST.value(), "Empty file.", "The uploaded file is empty.");
+            return new ResponseEntity<StatusMessage>(message, HttpStatus.BAD_REQUEST);
         }
 
         // Check MIME type (content type)
         String contentType = multipartFile.getContentType();
         if (!"text/csv".equals(contentType)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file type. Please upload a CSV file.");
+            StatusMessage message = new StatusMessage(HttpStatus.BAD_REQUEST.value(), "Invalid file type.", "Invalid file type. Please upload a CSV file.");
+            return new ResponseEntity<StatusMessage>(message, HttpStatus.BAD_REQUEST);
         }
 
         // Alternatively, check the file extension (case-insensitive)
@@ -65,12 +67,8 @@ public class DatabaseController {
         // extension. Please upload a file with .csv extension.");
         // }
 
-        try {
-            databaseService.parseProfilesFromCsvAndSaveData(multipartFile);
-            return ResponseEntity.status(HttpStatus.OK).body("File uploaded and data stored successfully!");
-        } catch (IOException | CsvValidationException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while processing the file: " + e.getMessage());
-        }
+        databaseService.parseProfilesFromCsvAndSaveData(multipartFile);
+        StatusMessage message = new StatusMessage(HttpStatus.OK.value(), "Data uploaded successfullys", "File uploaded and data stored successfully!");
+        return new ResponseEntity<StatusMessage>(message, HttpStatus.OK);
     }
 }
