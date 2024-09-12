@@ -71,7 +71,7 @@ public class DatabaseService {
     public void parseProfilesFromCsvAndSaveData(MultipartFile file) throws IOException, CsvValidationException {
         List<Profile> profiles = new ArrayList<>();
 
-        try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
+        try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream(), "UTF-8"))) {
             csvReader.readNext(); // Reads and discards the first line (header)
 
             String[] values;
