@@ -87,8 +87,7 @@ public class DatabaseService {
                         profile.setProfileId(Integer.parseInt(values[4]));
                     if (values[5].length() > 0)
                         profile.setCustomerId(Integer.parseInt(values[5]));
-                    // profile.setCustomerName(values[6]);
-                    profile.setCustomerName("CAFÉ STELLA");
+                    profile.setCustomerName(values[6]);
                     if (values[7].length() > 0)
                         profile.setCompItemId(Integer.parseInt(values[7]));
                     profile.setProfileDescription(values[8]);
