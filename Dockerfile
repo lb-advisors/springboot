@@ -1,4 +1,15 @@
 FROM openjdk:17-jdk-alpine
+ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
+# Install locale packages for Alpine
+RUN apk add --no-cache bash curl && \
+    apk add --no-cache --virtual .build-deps g++ && \
+    apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted glibc-locale && \
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen en_US.UTF-8
+# Set locale environment variables
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 VOLUME /tmp
