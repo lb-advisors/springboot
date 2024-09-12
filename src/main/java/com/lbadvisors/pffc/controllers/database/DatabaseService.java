@@ -71,7 +71,7 @@ public class DatabaseService {
     public void parseProfilesFromCsvAndSaveData(MultipartFile file) throws IOException, CsvValidationException {
         List<Profile> profiles = new ArrayList<>();
 
-        try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream(), "UTF-8"))) {
+        try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
             csvReader.readNext(); // Reads and discards the first line (header)
 
             String[] values;
@@ -100,10 +100,6 @@ public class DatabaseService {
                     profile.setCustomerContactName(values[13]);
                     profile.setCustomerCell(values[14]);
                     profile.setCustomerEmail(values[15]);
-
-                    logger.error(values[6]);
-                    logger.error("CAFÉ STELLA");
-
                     profile.setCompanyName(values[16]);
                     if (values[17].length() > 0)
                         profile.setCompanyId(Integer.parseInt(values[17]));
