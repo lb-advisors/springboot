@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ErrorMessage {
+public class StatusMessage {
     private int statusCode;
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = InstantDeserializer.class)
@@ -21,7 +21,7 @@ public class ErrorMessage {
     private String message;
     private String description;
 
-    public ErrorMessage(int statusCode, String message, String description) {
+    public StatusMessage(int statusCode, String message, String description) {
         this.statusCode = statusCode;
         this.timestamp = Instant.now();
         this.message = message;

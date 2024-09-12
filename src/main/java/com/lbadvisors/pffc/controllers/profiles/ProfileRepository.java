@@ -1,9 +1,11 @@
 package com.lbadvisors.pffc.controllers.profiles;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.lbadvisors.pffc.controllers.company.CompanyGetDto;
 import com.lbadvisors.pffc.controllers.customers.CustomerGetDto;
@@ -26,7 +28,11 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer> {
     List<SalesRepGetDto> findDistinctSalesRepNames(@Param("companyId") Integer companyId);
 
     @Query("SELECT DISTINCT new com.lbadvisors.pffc.controllers.customers.CustomerGetDto(c.customerId, c.customerName) FROM Profile c where c.companyId = :companyId and c.salesRepName = :salesRepName ORDER BY c.customerName")
-    List<CustomerGetDto> findDistinctCustomers(@Param("companyId") Integer companyId,
-            @Param("salesRepName") String salesRepName);
+    List<CustomerGetDto> findDistinctCustomers(@Param("companyId") Integer companyId, @Param("salesRepName") String salesRepName);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM profile_child", nativeQuery = true)
+    void deleteAllProfilesInBulk();
 
 }
