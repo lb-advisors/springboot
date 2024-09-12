@@ -7,8 +7,6 @@ ENV LC_ALL=en_US.UTF-8
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 VOLUME /tmp
-ARG JAVA_OPTS
-ENV JAVA_OPTS=$JAVA_OPTS
 COPY target/*.jar pffc.jar
 EXPOSE 8080
 ARG BUILD_TIME 'N/A'
