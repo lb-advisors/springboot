@@ -49,7 +49,8 @@ public class AppInfoController {
         appInfo.environment = env.getActiveProfiles()[0];
         appInfo.builtTime = formattedDateTime;
         appInfo.commitMessage = env.getProperty("COMMIT_MESSAGE");
-        appInfo.commitHash = env.getProperty("COMMIT_HASH");
+        appInfo.commitHash = env.getProperty("COMMIT_HASH") + System.getProperty("file.encoding");
+        ;
 
         // return new ResponseEntity<>(appInfo, HttpStatus.OK);
         return ResponseEntity.ok(appInfo);
