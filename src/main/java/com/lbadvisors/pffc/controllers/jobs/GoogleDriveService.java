@@ -68,9 +68,6 @@ public class GoogleDriveService {
     @Autowired
     InventoryRepository inventoryRepository;
 
-    @Value("${google.drive.application.name}")
-    private String googleDriveApplicationName;
-
     @Value("${google.drive.folder.id}")
     private String googleDriveFolderId;
 
@@ -81,9 +78,9 @@ public class GoogleDriveService {
      */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
-    public GoogleDriveService(@Value("${google.drive.credentials}") String googleDriveCredentials) {
+    public GoogleDriveService(@Value("${google.drive.credentials}") String googleDriveCredentials, @Value("${google.drive.application.name}") String googleDriveApplicationName) {
         try {
-            initializeDriveService(googleDriveCredentials);
+            initializeDriveService(googleDriveCredentials, googleDriveApplicationName);
         } catch (IOException | GeneralSecurityException ex) {
             logger.error(ex.getMessage(), ex);
         }
@@ -96,7 +93,7 @@ public class GoogleDriveService {
      * @throws IOException              if the service account file cannot be read.
      * @throws GeneralSecurityException if there's a security issue.
      */
-    private void initializeDriveService(String googleDriveCredentials) throws IOException, GeneralSecurityException {
+    private void initializeDriveService(String googleDriveCredentials, String googleDriveApplicationName) throws IOException, GeneralSecurityException {
         // Load service account credentials
         GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(googleDriveCredentials.getBytes()))
                 .createScoped(Collections.singleton(DriveScopes.DRIVE));
@@ -166,7 +163,7 @@ public class GoogleDriveService {
         return updatedFile;
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    // @Scheduled(cron = "0 */5 * * * ?")
     protected void updateOrderFile() {
 
         final String filename = "Orders.csv";
@@ -194,7 +191,7 @@ public class GoogleDriveService {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    // @Scheduled(cron = "0 */5 * * * ?")
     @Transactional
     protected void refreshProfileTableFromCsv() {
 
@@ -268,7 +265,7 @@ public class GoogleDriveService {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    // @Scheduled(cron = "0 */5 * * * ?")
     @Transactional
     protected void refreshInventoryTableFromCsv() {
 
