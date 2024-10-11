@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,8 +74,6 @@ public class GoogleDriveService {
     @Value("${google.drive.folder.id}")
     private String googleDriveFolderId;
 
-    private static final String SERVICE_ACCOUNT_KEY_PATH = "src/main/resources/google-drive-service-account.json";
-
     private Drive driveService;
 
     /**
@@ -83,9 +81,9 @@ public class GoogleDriveService {
      */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
-    public GoogleDriveService() {
+    public GoogleDriveService(@Value("${google.drive.credentials}") String googleDriveCredentials) {
         try {
-            initializeDriveService();
+            initializeDriveService(googleDriveCredentials);
         } catch (IOException | GeneralSecurityException ex) {
             logger.error(ex.getMessage(), ex);
         }
@@ -98,9 +96,10 @@ public class GoogleDriveService {
      * @throws IOException              if the service account file cannot be read.
      * @throws GeneralSecurityException if there's a security issue.
      */
-    private void initializeDriveService() throws IOException, GeneralSecurityException {
+    private void initializeDriveService(String googleDriveCredentials) throws IOException, GeneralSecurityException {
         // Load service account credentials
-        GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(SERVICE_ACCOUNT_KEY_PATH)).createScoped(Collections.singleton(DriveScopes.DRIVE));
+        GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(googleDriveCredentials.getBytes()))
+                .createScoped(Collections.singleton(DriveScopes.DRIVE));
 
         // Build the Drive client
         driveService = new Drive.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, new HttpCredentialsAdapter(credentials))
