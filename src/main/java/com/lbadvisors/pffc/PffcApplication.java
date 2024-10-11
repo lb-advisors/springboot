@@ -11,12 +11,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.lbadvisors.pffc.configuration.AuditorAwareImpl;
 import com.lbadvisors.pffc.configuration.AwsProperties;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
 @EnableConfigurationProperties(AwsProperties.class)
+@EnableScheduling
 
 public class PffcApplication {
 

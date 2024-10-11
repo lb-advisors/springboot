@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "google.drive.folder.id",
+    "type": "java.lang.String",
+    "description": "Folder ID containing the CSV files'"
+  },
+  {
+    "name": "google.drive.application.name",
+    "type": "java.lang.String",
+    "description": "Google Drive application name"
+  }
+]}
