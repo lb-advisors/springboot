@@ -163,7 +163,7 @@ public class GoogleDriveService {
         return updatedFile;
     }
 
-    // @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     protected void updateOrderFile() {
 
         final String filename = "Orders.csv";
@@ -191,9 +191,11 @@ public class GoogleDriveService {
         }
     }
 
-    // @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     @Transactional
     protected void refreshProfileTableFromCsv() {
+
+        logger.error("Entering refreshProfileTableFromCsv - just to test");
 
         final String filename = "Profiles.csv";
 
@@ -265,7 +267,7 @@ public class GoogleDriveService {
         }
     }
 
-    // @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     @Transactional
     protected void refreshInventoryTableFromCsv() {
 
