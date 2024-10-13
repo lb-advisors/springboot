@@ -195,8 +195,6 @@ public class GoogleDriveService {
     @Transactional
     protected void refreshProfileTableFromCsv() {
 
-        logger.error("Entering refreshProfileTableFromCsv - just to test");
-
         final String filename = "Profiles.csv";
 
         try {
