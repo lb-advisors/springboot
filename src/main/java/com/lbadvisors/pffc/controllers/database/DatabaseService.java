@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +17,7 @@ import com.lbadvisors.pffc.controllers.orders.Order;
 import com.lbadvisors.pffc.controllers.orders.OrderRepository;
 import com.lbadvisors.pffc.controllers.profiles.Profile;
 import com.lbadvisors.pffc.controllers.profiles.ProfileRepository;
+import com.lbadvisors.pffc.exception.ControllerAdvisor;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
@@ -25,6 +28,8 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class DatabaseService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ControllerAdvisor.class);
 
     @Autowired
     OrderRepository orderRepository;
