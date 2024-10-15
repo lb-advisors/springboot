@@ -185,7 +185,7 @@ public class OneDriveService {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    // @Scheduled(cron = "0 */5 * * * ?")
     protected void updateOrderFile() {
 
         final String filename = oneDriveFolderName + "/" + "Orders.csv";
@@ -223,7 +223,7 @@ public class OneDriveService {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    // @Scheduled(cron = "0 */5 * * * ?")
     @Transactional
     protected void refreshProfileTableFromCsv() {
 
@@ -326,6 +326,7 @@ public class OneDriveService {
             }
 
         } catch (IOException | CsvValidationException ex) {
+            logger.error("Error in '" + filename + "': " + ex.getMessage(), ex);
             logMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
