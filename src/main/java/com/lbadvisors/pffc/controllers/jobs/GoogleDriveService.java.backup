@@ -16,7 +16,6 @@ import com.lbadvisors.pffc.controllers.orders.Order;
 import com.lbadvisors.pffc.controllers.orders.OrderRepository;
 import com.lbadvisors.pffc.controllers.profiles.Profile;
 import com.lbadvisors.pffc.controllers.profiles.ProfileRepository;
-import com.lbadvisors.pffc.util.AwsService;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
@@ -54,7 +53,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Service
 public class GoogleDriveService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AwsService.class);
+    private static final Logger logger = LoggerFactory.getLogger(GoogleDriveService.class);
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -163,8 +162,8 @@ public class GoogleDriveService {
         return updatedFile;
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
-    protected void updateOrderFile() {
+
+protected void updateOrderFile() {
 
         final String filename = "Orders.csv";
 
@@ -191,7 +190,7 @@ public class GoogleDriveService {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+
     @Transactional
     protected void refreshProfileTableFromCsv() {
 
@@ -265,7 +264,7 @@ public class GoogleDriveService {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+
     @Transactional
     protected void refreshInventoryTableFromCsv() {
 
