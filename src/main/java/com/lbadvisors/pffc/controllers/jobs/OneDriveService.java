@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -125,7 +126,7 @@ public class OneDriveService {
         throw new IOException("Graph API Error - Code: " + errorCode + " - Message: " + errorMessage);
     }
 
-    private InputStream getFileContent(String filePath) throws IOException {
+    private InputStream getFileContent(String filePath) throws ClientProtocolException, IOException {
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
 
@@ -223,7 +224,7 @@ public class OneDriveService {
         }
     }
 
-    // @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     @Transactional
     protected void refreshProfileTableFromCsv() {
 
@@ -281,6 +282,7 @@ public class OneDriveService {
                 bulkInsert(profiles, "profiles");
             }
         } catch (IOException | CsvValidationException ex) {
+            logger.error("Error in '" + filename + "': " + ex.getMessage(), ex);
             logMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
