@@ -216,7 +216,7 @@ public class OneDriveService {
 
             }
 
-            uploadFile(filename, csvWriter.toString());
+            uploadFile(filename, writer.toString());
 
         } catch (IOException ex) {
             logMessage("Error in '" + filename + "': " + ex.getMessage());
