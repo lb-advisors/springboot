@@ -1,17 +1,27 @@
 {"properties": [
   {
-    "name": "google.drive.folder.id",
+    "name": "onedrive.client.id",
     "type": "java.lang.String",
-    "description": "Folder ID containing the CSV files'"
+    "description": "A description for 'onedrive.client.id'"
   },
   {
-    "name": "google.drive.application.name",
+    "name": "onedrive.client.secret",
     "type": "java.lang.String",
-    "description": "Google Drive application name"
+    "description": "A description for 'onedrive.tenant.secret'"
   },
   {
-    "name": "google.drive.credentials",
+    "name": "onedrive.tenant.id",
     "type": "java.lang.String",
-    "description": "A description for 'google.drive.credentials'"
+    "description": "A description for 'onedrive.tenant.id'"
+  },
+  {
+    "name": "onedrive.user.email",
+    "type": "java.lang.String",
+    "description": "A description for 'onedrive.user.email'"
+  },
+  {
+    "name": "onedrive.folder.name",
+    "type": "java.lang.String",
+    "description": "A description for 'onedrive.folder.name'"
   }
 ]}
