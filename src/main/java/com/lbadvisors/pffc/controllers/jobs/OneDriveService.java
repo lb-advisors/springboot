@@ -288,7 +288,6 @@ public class OneDriveService {
                 bulkInsert(profiles, "profiles");
             }
         } catch (IOException | CsvValidationException ex) {
-            logger.error("Error2 in '" + filename + "': " + ex.getMessage(), ex);
             logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
@@ -334,7 +333,6 @@ public class OneDriveService {
             }
 
         } catch (IOException | CsvValidationException ex) {
-            logger.error("Error2 in '" + filename + "': " + ex.getMessage(), ex);
             logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
@@ -358,11 +356,11 @@ public class OneDriveService {
 
     private synchronized void logErrorMessage(String message) {
 
+        logger.error("Entering logErrorMessage: " + message);
+
         if (0 == 0) {
             return;
         }
-
-        logger.error("Entering logErrorMessage: " + message);
 
         final String filename = oneDriveFolderName + "/" + "Errors.log";
 
@@ -377,8 +375,7 @@ public class OneDriveService {
             uploadFile(filename, logErrorMessages);
 
         } catch (IOException ex) {
-            // logger.error(ex.getMessage(), ex);
-            logger.error(ex.getMessage(), ex);
+            logger.error(ex.getMessage());
         }
     }
 }
