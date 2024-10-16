@@ -218,11 +218,10 @@ public class OneDriveService {
                 String[] data = { String.valueOf(order.getId()), order.getCustomerName(), order.getSalesRepName(), order.getProfileDescription(), order.getUnitType(),
                         String.valueOf(order.getPackSize()), String.valueOf(order.getPrice()), String.valueOf(order.getQuantity()), String.valueOf(order.getTotalPrice()),
                         String.valueOf(order.getDeliveryDate()), String.valueOf(order.getCustomerId()), order.getCustomerEmail(), order.getSalesRepPhone(),
-                        String.valueOf(order.getOrderId()), order.getCustomerPo(), String.valueOf(order.getProfileDid()), String.valueOf(order.getShipToId()),
-                        order.getShipToName(), order.getShipToName(), order.getCreatedBy(), String.valueOf(order.getCreatedAt()), order.getLastUpdatedBy(),
+                        String.valueOf(order.getOrderId()), order.getCustomerPo(), String.valueOf(order.getProfileId()), String.valueOf(order.getProfileDid()),
+                        String.valueOf(order.getShipToId()), order.getShipToName(), order.getCreatedBy(), String.valueOf(order.getCreatedAt()), order.getLastUpdatedBy(),
                         String.valueOf(order.getLastUpdatedAt()) };
                 csvWriter.writeNext(data);
-
             }
 
             uploadFile(filename, writer.toString());
@@ -296,8 +295,6 @@ public class OneDriveService {
     @Transactional
     protected void refreshInventoryTableFromCsv() {
 
-        logger.info("Entering refreshInventoryTableFromCsv");
-
         final String filename = oneDriveFolderName + "/" + "Inventory.csv";
 
         try {
@@ -357,10 +354,6 @@ public class OneDriveService {
     private synchronized void logErrorMessage(String message) {
 
         logger.error("Entering logErrorMessage: " + message);
-
-        if (0 == 0) {
-            return;
-        }
 
         final String filename = oneDriveFolderName + "/" + "Errors.log";
 
