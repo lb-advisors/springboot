@@ -54,7 +54,7 @@ public class ScheduledJobs {
         this.oneDriveFolderName = oneDriveFolderName;
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */2 * * * ?")
     protected void updateOrderFile() {
 
         final String filename = oneDriveFolderName + "/" + "Orders.csv";
