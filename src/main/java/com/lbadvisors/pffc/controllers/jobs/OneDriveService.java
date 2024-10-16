@@ -22,7 +22,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -86,7 +85,6 @@ public class OneDriveService {
     }
 
     private String getAccessToken() throws IOException {
-        // try (CloseableHttpClient client = HttpClients.createDefault()) {
         HttpPost post = new HttpPost(oneDriveTokenUrl);
 
         List<NameValuePair> urlParameters = new ArrayList<>();
@@ -96,6 +94,7 @@ public class OneDriveService {
         urlParameters.add(new BasicNameValuePair("scope", SCOPE));
 
         post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
         try (CloseableHttpResponse response = httpClient.execute(post)) {
 
             // Check response status
@@ -129,28 +128,26 @@ public class OneDriveService {
         throw new IOException("Graph API Error - Code: " + errorCode + " - Message: " + errorMessage);
     }
 
-    private InputStream getFileContent(String filePath) throws ClientProtocolException, IOException {
+    private InputStream getFileContent(String filePath) throws IOException, ClientProtocolException {
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
 
         String accessToken = getAccessToken();
 
         String fileDownloadUrl = oneDriveGrapApiBaseUrl + encodedFilePath + ":/content";
-        // try (CloseableHttpClient client = HttpClients.createDefault()) {
 
         HttpGet request = new HttpGet(fileDownloadUrl);
         request.addHeader("Authorization", "Bearer " + accessToken);
 
-        try (CloseableHttpResponse response = httpClient.execute(request)) {
+        CloseableHttpResponse response = httpClient.execute(request);
 
-            // Check response status
-            if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
-                // If an error occurs, parse the response to get error code and message
-                String responseBody = EntityUtils.toString(response.getEntity());
-                handleGraphApiError(responseBody);
-            }
-            return response.getEntity().getContent();
+        // Check response status
+        if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
+            // If an error occurs, parse the response to get error code and message
+            String responseBody = EntityUtils.toString(response.getEntity());
+            handleGraphApiError(responseBody);
         }
+        return response.getEntity().getContent();
     }
 
     /**
@@ -170,7 +167,6 @@ public class OneDriveService {
         // The URL to upload the file content to OneDrive
         String uploadUrl = oneDriveGrapApiBaseUrl + encodedFilePath + ":/content";
 
-        // try (CloseableHttpClient client = HttpClients.createDefault()) {
         // Create a PUT request to upload the file
         HttpPut httpPut = new HttpPut(uploadUrl);
         httpPut.setHeader("Authorization", "Bearer " + accessToken);
@@ -239,10 +235,8 @@ public class OneDriveService {
         try {
 
             // Fetch the CSV file content
-            InputStream inputStream = getFileContent(filename);
-
             // Read the CSV file
-            try (CSVReader csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            try (InputStream inputStream = getFileContent(filename); CSVReader csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
                 csvReader.readNext(); // Reads and discards the first line (header)
 
@@ -297,15 +291,15 @@ public class OneDriveService {
     @Transactional
     protected void refreshInventoryTableFromCsv() {
 
+        logger.info("Entering refreshInventoryTableFromCsv");
+
         final String filename = oneDriveFolderName + "/" + "Inventory.csv";
 
         try {
 
             // Fetch the CSV file content
-            InputStream inputStream = getFileContent(filename);
-
             // Read the CSV file
-            try (CSVReader csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            try (InputStream inputStream = getFileContent(filename); CSVReader csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
                 csvReader.readNext(); // Reads and discards the first line (header)
 
@@ -362,8 +356,7 @@ public class OneDriveService {
 
         final String filename = oneDriveFolderName + "/" + "Errors.log";
 
-        try {
-            InputStream inputStream = getFileContent(filename);
+        try (InputStream inputStream = getFileContent(filename)) {
 
             String logMessages = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
@@ -372,6 +365,18 @@ public class OneDriveService {
             logMessages = LocalDateTime.now().format(formatter) + ": " + message + System.lineSeparator() + logMessages;
 
             uploadFile(filename, logMessages);
+
+        } catch (IOException ex) {
+            logger.error(ex.getMessage(), ex);
+        }
+    }
+
+    @Scheduled(cron = "0 */2 * * * ?")
+    protected void test() {
+        logger.info("Entering test");
+        final String filename = oneDriveFolderName + "/" + "ReadMe.txt";
+        try (InputStream inputStream = getFileContent(filename)) {
+            logger.info("Got input stream");
 
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);
