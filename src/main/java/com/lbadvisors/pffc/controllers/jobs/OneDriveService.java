@@ -22,7 +22,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -66,6 +65,8 @@ public class OneDriveService {
     @Autowired
     InventoryRepository inventoryRepository;
 
+    private final CloseableHttpClient httpClient;
+
     private String oneDriveTokenUrl;
     private String oneDriveClientId;
     private String oneDriveClientSecret;
@@ -73,18 +74,19 @@ public class OneDriveService {
     private String oneDriveFolderName;
     private String SCOPE = "https://graph.microsoft.com/.default";
 
-    public OneDriveService(@Value("${onedrive.tenant.id}") String oneDriveTenantId, @Value("${onedrive.client.secret}") String oneDriveClientSecret,
+    public OneDriveService(CloseableHttpClient httpClient, @Value("${onedrive.tenant.id}") String oneDriveTenantId, @Value("${onedrive.client.secret}") String oneDriveClientSecret,
             @Value("${onedrive.client.id}") String oneDriveClientId, @Value("${onedrive.user.email}") String oneDriveUserEmail,
             @Value("${onedrive.folder.name}") String oneDriveFolderName) {
-        oneDriveTokenUrl = String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", oneDriveTenantId);
-        oneDriveGrapApiBaseUrl = String.format("https://graph.microsoft.com/v1.0/users/%s/drive/root:/", oneDriveUserEmail);
+        this.httpClient = httpClient;
+        this.oneDriveTokenUrl = String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", oneDriveTenantId);
+        this.oneDriveGrapApiBaseUrl = String.format("https://graph.microsoft.com/v1.0/users/%s/drive/root:/", oneDriveUserEmail);
         this.oneDriveClientId = oneDriveClientId;
         this.oneDriveClientSecret = oneDriveClientSecret;
         this.oneDriveFolderName = oneDriveFolderName;
     }
 
     private String getAccessToken() throws IOException {
-        CloseableHttpClient client = HttpClientBuilder.create().build();
+        // try (CloseableHttpClient client = HttpClients.createDefault()) {
         HttpPost post = new HttpPost(oneDriveTokenUrl);
 
         List<NameValuePair> urlParameters = new ArrayList<>();
@@ -94,7 +96,7 @@ public class OneDriveService {
         urlParameters.add(new BasicNameValuePair("scope", SCOPE));
 
         post.setEntity(new UrlEncodedFormEntity(urlParameters));
-        CloseableHttpResponse response = client.execute(post);
+        CloseableHttpResponse response = httpClient.execute(post);
 
         // Check response status
         if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
@@ -104,6 +106,7 @@ public class OneDriveService {
         String jsonResponse = EntityUtils.toString(response.getEntity());
         JsonNode tokenNode = new ObjectMapper().readTree(jsonResponse);
         return tokenNode.get("access_token").asText();
+        // }
     }
 
     // Handle and parse the error response from Microsoft Graph API
@@ -133,11 +136,12 @@ public class OneDriveService {
         String accessToken = getAccessToken();
 
         String fileDownloadUrl = oneDriveGrapApiBaseUrl + encodedFilePath + ":/content";
-        CloseableHttpClient client = HttpClientBuilder.create().build();
+        // try (CloseableHttpClient client = HttpClients.createDefault()) {
+
         HttpGet request = new HttpGet(fileDownloadUrl);
         request.addHeader("Authorization", "Bearer " + accessToken);
 
-        CloseableHttpResponse response = client.execute(request);
+        CloseableHttpResponse response = httpClient.execute(request);
 
         // Check response status
         if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
@@ -146,6 +150,7 @@ public class OneDriveService {
             handleGraphApiError(responseBody);
         }
         return response.getEntity().getContent();
+        // }
     }
 
     /**
@@ -165,25 +170,25 @@ public class OneDriveService {
         // The URL to upload the file content to OneDrive
         String uploadUrl = oneDriveGrapApiBaseUrl + encodedFilePath + ":/content";
 
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            // Create a PUT request to upload the file
-            HttpPut httpPut = new HttpPut(uploadUrl);
-            httpPut.setHeader("Authorization", "Bearer " + accessToken);
-            httpPut.setHeader("Content-Type", "text/plain");
+        // try (CloseableHttpClient client = HttpClients.createDefault()) {
+        // Create a PUT request to upload the file
+        HttpPut httpPut = new HttpPut(uploadUrl);
+        httpPut.setHeader("Authorization", "Bearer " + accessToken);
+        httpPut.setHeader("Content-Type", "text/plain");
 
-            // Set the file content in the body of the request
-            StringEntity entity = new StringEntity(fileContent);
-            httpPut.setEntity(entity);
+        // Set the file content in the body of the request
+        StringEntity entity = new StringEntity(fileContent);
+        httpPut.setEntity(entity);
 
-            // Execute the request
-            CloseableHttpResponse response = client.execute(httpPut);
+        // Execute the request
+        CloseableHttpResponse response = httpClient.execute(httpPut);
 
-            // Check response status
-            if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
-                String responseBody = EntityUtils.toString(response.getEntity());
-                handleGraphApiError(responseBody);
-            }
+        // Check response status
+        if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
+            String responseBody = EntityUtils.toString(response.getEntity());
+            handleGraphApiError(responseBody);
         }
+        // }
     }
 
     @Scheduled(cron = "0 */5 * * * ?")
