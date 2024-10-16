@@ -1,7 +1,7 @@
 package com.lbadvisors.pffc.configuration;
 
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.context.annotation.Bean;
@@ -17,10 +17,12 @@ public class HttpClientConfig {
                 .setSocketTimeout(10000) // 10 seconds socket timeout
                 .build();
 
-        // Create BasicHttpClientConnectionManager
-        BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
+        // Create PoolingHttpClientConnectionManager
+        PoolingHttpClientConnectionManager poolingConnectionManager = new PoolingHttpClientConnectionManager();
+        poolingConnectionManager.setMaxTotal(20); // Max total connections
+        poolingConnectionManager.setDefaultMaxPerRoute(5); // Max connections per route
 
-        // Build the CloseableHttpClient with RequestConfig and ConnectionManager
-        return HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).setConnectionManager(connectionManager).build();
+        // Build the CloseableHttpClient with the connection pool
+        return HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).setConnectionManager(poolingConnectionManager).build();
     }
 }
