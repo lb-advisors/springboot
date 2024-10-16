@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
-
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -126,7 +126,7 @@ public class OneDriveService {
         throw new IOException("Graph API Error - Code: " + errorCode + " - Message: " + errorMessage);
     }
 
-    private InputStream getFileContent(String filePath) throws IOException {
+    private InputStream getFileContent(String filePath) throws ClientProtocolException, IOException {
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
 
@@ -282,7 +282,7 @@ public class OneDriveService {
                 bulkInsert(profiles, "profiles");
             }
         } catch (IOException | CsvValidationException ex) {
-
+            logger.error("Error2 in '" + filename + "': " + ex.getMessage(), ex);
             logMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
@@ -328,7 +328,7 @@ public class OneDriveService {
             }
 
         } catch (IOException | CsvValidationException ex) {
-
+            logger.error("Error2 in '" + filename + "': " + ex.getMessage(), ex);
             logMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
@@ -352,7 +352,7 @@ public class OneDriveService {
 
     private synchronized void logMessage(String message) {
 
-        logger.error(message);
+        logger.error("Entering logMessage: " + message);
 
         final String filename = oneDriveFolderName + "/" + "Errors.log";
 
