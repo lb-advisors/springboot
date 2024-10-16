@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -21,14 +22,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +66,8 @@ public class OneDriveService {
     @Autowired
     InventoryRepository inventoryRepository;
 
+    private final CloseableHttpClient httpClient;
+
     private String oneDriveTokenUrl;
     private String oneDriveClientId;
     private String oneDriveClientSecret;
@@ -72,18 +75,19 @@ public class OneDriveService {
     private String oneDriveFolderName;
     private String SCOPE = "https://graph.microsoft.com/.default";
 
-    public OneDriveService(@Value("${onedrive.tenant.id}") String oneDriveTenantId, @Value("${onedrive.client.secret}") String oneDriveClientSecret,
+    public OneDriveService(CloseableHttpClient httpClient, @Value("${onedrive.tenant.id}") String oneDriveTenantId, @Value("${onedrive.client.secret}") String oneDriveClientSecret,
             @Value("${onedrive.client.id}") String oneDriveClientId, @Value("${onedrive.user.email}") String oneDriveUserEmail,
             @Value("${onedrive.folder.name}") String oneDriveFolderName) {
-        oneDriveTokenUrl = String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", oneDriveTenantId);
-        oneDriveGrapApiBaseUrl = String.format("https://graph.microsoft.com/v1.0/users/%s/drive/root:/", oneDriveUserEmail);
+        this.httpClient = httpClient;
+        this.oneDriveTokenUrl = String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", oneDriveTenantId);
+        this.oneDriveGrapApiBaseUrl = String.format("https://graph.microsoft.com/v1.0/users/%s/drive/root:/", oneDriveUserEmail);
         this.oneDriveClientId = oneDriveClientId;
         this.oneDriveClientSecret = oneDriveClientSecret;
         this.oneDriveFolderName = oneDriveFolderName;
     }
 
+    @Retryable(retryFor = { Exception.class, java.net.SocketException.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     private String getAccessToken() throws IOException {
-        CloseableHttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(oneDriveTokenUrl);
 
         List<NameValuePair> urlParameters = new ArrayList<>();
@@ -93,26 +97,29 @@ public class OneDriveService {
         urlParameters.add(new BasicNameValuePair("scope", SCOPE));
 
         post.setEntity(new UrlEncodedFormEntity(urlParameters));
-        CloseableHttpResponse response = client.execute(post);
 
-        // Check response status
-        if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
-            throw new IOException("Cannot retrieve authentication token");
+        try (CloseableHttpResponse response = httpClient.execute(post)) {
+
+            // Check response status
+            if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
+                throw new IOException("Cannot retrieve authentication token");
+            }
+
+            String jsonResponse = EntityUtils.toString(response.getEntity());
+            JsonNode tokenNode = new ObjectMapper().readTree(jsonResponse);
+            return tokenNode.get("access_token").asText();
         }
-
-        String jsonResponse = EntityUtils.toString(response.getEntity());
-        JsonNode tokenNode = new ObjectMapper().readTree(jsonResponse);
-        return tokenNode.get("access_token").asText();
     }
 
     // Handle and parse the error response from Microsoft Graph API
     private void handleGraphApiError(String responseBody) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
 
         String errorCode;
         String errorMessage;
 
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
             JsonNode rootNode = objectMapper.readTree(responseBody);
             JsonNode errorNode = rootNode.path("error");
 
@@ -125,18 +132,19 @@ public class OneDriveService {
         throw new IOException("Graph API Error - Code: " + errorCode + " - Message: " + errorMessage);
     }
 
-    private InputStream getFileContent(String filePath) throws IOException {
+    @Retryable(retryFor = { Exception.class, java.net.SocketException.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
+    private InputStream getFileContent(String filePath) throws IOException, ClientProtocolException {
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
 
         String accessToken = getAccessToken();
 
         String fileDownloadUrl = oneDriveGrapApiBaseUrl + encodedFilePath + ":/content";
-        CloseableHttpClient client = HttpClientBuilder.create().build();
+
         HttpGet request = new HttpGet(fileDownloadUrl);
         request.addHeader("Authorization", "Bearer " + accessToken);
 
-        CloseableHttpResponse response = client.execute(request);
+        CloseableHttpResponse response = httpClient.execute(request);
 
         // Check response status
         if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
@@ -155,6 +163,7 @@ public class OneDriveService {
      * @param fileContent The content to be written to the file
      * @throws IOException If an error occurs during file upload
      */
+    @Retryable(retryFor = { Exception.class, java.net.SocketException.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     private void uploadFile(String filePath, String fileContent) throws IOException {
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
@@ -164,18 +173,17 @@ public class OneDriveService {
         // The URL to upload the file content to OneDrive
         String uploadUrl = oneDriveGrapApiBaseUrl + encodedFilePath + ":/content";
 
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            // Create a PUT request to upload the file
-            HttpPut httpPut = new HttpPut(uploadUrl);
-            httpPut.setHeader("Authorization", "Bearer " + accessToken);
-            httpPut.setHeader("Content-Type", "text/plain");
+        // Create a PUT request to upload the file
+        HttpPut httpPut = new HttpPut(uploadUrl);
+        httpPut.setHeader("Authorization", "Bearer " + accessToken);
+        httpPut.setHeader("Content-Type", "text/plain");
 
-            // Set the file content in the body of the request
-            StringEntity entity = new StringEntity(fileContent);
-            httpPut.setEntity(entity);
+        // Set the file content in the body of the request
+        StringEntity entity = new StringEntity(fileContent);
+        httpPut.setEntity(entity);
 
-            // Execute the request
-            CloseableHttpResponse response = client.execute(httpPut);
+        // Execute the request
+        try (CloseableHttpResponse response = httpClient.execute(httpPut)) {
 
             // Check response status
             if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
@@ -183,6 +191,7 @@ public class OneDriveService {
                 handleGraphApiError(responseBody);
             }
         }
+
     }
 
     @Scheduled(cron = "0 */5 * * * ?")
@@ -209,17 +218,16 @@ public class OneDriveService {
                 String[] data = { String.valueOf(order.getId()), order.getCustomerName(), order.getSalesRepName(), order.getProfileDescription(), order.getUnitType(),
                         String.valueOf(order.getPackSize()), String.valueOf(order.getPrice()), String.valueOf(order.getQuantity()), String.valueOf(order.getTotalPrice()),
                         String.valueOf(order.getDeliveryDate()), String.valueOf(order.getCustomerId()), order.getCustomerEmail(), order.getSalesRepPhone(),
-                        String.valueOf(order.getOrderId()), order.getCustomerPo(), String.valueOf(order.getProfileDid()), String.valueOf(order.getShipToId()),
-                        order.getShipToName(), order.getShipToName(), order.getCreatedBy(), String.valueOf(order.getCreatedAt()), order.getLastUpdatedBy(),
+                        String.valueOf(order.getOrderId()), order.getCustomerPo(), String.valueOf(order.getProfileId()), String.valueOf(order.getProfileDid()),
+                        String.valueOf(order.getShipToId()), order.getShipToName(), order.getCreatedBy(), String.valueOf(order.getCreatedAt()), order.getLastUpdatedBy(),
                         String.valueOf(order.getLastUpdatedAt()) };
                 csvWriter.writeNext(data);
-
             }
 
             uploadFile(filename, writer.toString());
 
         } catch (IOException ex) {
-            logMessage("Error in '" + filename + "': " + ex.getMessage());
+            logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
 
@@ -232,10 +240,8 @@ public class OneDriveService {
         try {
 
             // Fetch the CSV file content
-            InputStream inputStream = getFileContent(filename);
-
             // Read the CSV file
-            try (CSVReader csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            try (InputStream inputStream = getFileContent(filename); CSVReader csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
                 csvReader.readNext(); // Reads and discards the first line (header)
 
@@ -274,14 +280,14 @@ public class OneDriveService {
                         profiles.add(profile);
 
                     } catch (NumberFormatException ex) {
-                        logMessage("Error in '" + filename + "': " + ex.getMessage());
+                        logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
                     }
                 }
                 profileRepository.deleteAllProfilesInBulk();
                 bulkInsert(profiles, "profiles");
             }
         } catch (IOException | CsvValidationException ex) {
-            logMessage("Error in '" + filename + "': " + ex.getMessage());
+            logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
 
@@ -294,10 +300,8 @@ public class OneDriveService {
         try {
 
             // Fetch the CSV file content
-            InputStream inputStream = getFileContent(filename);
-
             // Read the CSV file
-            try (CSVReader csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            try (InputStream inputStream = getFileContent(filename); CSVReader csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
                 csvReader.readNext(); // Reads and discards the first line (header)
 
@@ -318,7 +322,7 @@ public class OneDriveService {
                         inventories.add(inventory);
 
                     } catch (NumberFormatException ex) {
-                        logMessage("Error in '" + filename + "': " + ex.getMessage());
+                        logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
                     }
                 }
                 inventoryRepository.deleteAllInventoriesInBulk();
@@ -326,7 +330,7 @@ public class OneDriveService {
             }
 
         } catch (IOException | CsvValidationException ex) {
-            logMessage("Error in '" + filename + "': " + ex.getMessage());
+            logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
 
@@ -347,25 +351,24 @@ public class OneDriveService {
         entityManager.clear();
     }
 
-    private synchronized void logMessage(String message) {
+    private synchronized void logErrorMessage(String message) {
 
-        logger.error(message);
+        logger.error("Entering logErrorMessage: " + message);
 
         final String filename = oneDriveFolderName + "/" + "Errors.log";
 
-        try {
-            InputStream inputStream = getFileContent(filename);
+        try (InputStream inputStream = getFileContent(filename)) {
 
-            String logMessages = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            String logErrorMessages = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 
-            logMessages = LocalDateTime.now().format(formatter) + ": " + message + System.lineSeparator() + logMessages;
+            logErrorMessages = LocalDateTime.now().format(formatter) + ": " + message + System.lineSeparator() + logErrorMessages;
 
-            uploadFile(filename, logMessages);
+            uploadFile(filename, logErrorMessages);
 
         } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error(ex.getMessage());
         }
     }
 }
