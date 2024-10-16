@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +86,7 @@ public class OneDriveService {
         this.oneDriveFolderName = oneDriveFolderName;
     }
 
+    @Retryable(retryFor = { IOException.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     private String getAccessToken() throws IOException {
         HttpPost post = new HttpPost(oneDriveTokenUrl);
 
@@ -110,12 +113,13 @@ public class OneDriveService {
 
     // Handle and parse the error response from Microsoft Graph API
     private void handleGraphApiError(String responseBody) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
 
         String errorCode;
         String errorMessage;
 
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
             JsonNode rootNode = objectMapper.readTree(responseBody);
             JsonNode errorNode = rootNode.path("error");
 
@@ -128,6 +132,7 @@ public class OneDriveService {
         throw new IOException("Graph API Error - Code: " + errorCode + " - Message: " + errorMessage);
     }
 
+    @Retryable(retryFor = { IOException.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     private InputStream getFileContent(String filePath) throws IOException, ClientProtocolException {
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
@@ -158,6 +163,7 @@ public class OneDriveService {
      * @param fileContent The content to be written to the file
      * @throws IOException If an error occurs during file upload
      */
+    @Retryable(retryFor = { IOException.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     private void uploadFile(String filePath, String fileContent) throws IOException {
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
@@ -222,7 +228,7 @@ public class OneDriveService {
             uploadFile(filename, writer.toString());
 
         } catch (IOException ex) {
-            logMessage("Error in '" + filename + "': " + ex.getMessage());
+            logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
 
@@ -275,7 +281,7 @@ public class OneDriveService {
                         profiles.add(profile);
 
                     } catch (NumberFormatException ex) {
-                        logMessage("Error in '" + filename + "': " + ex.getMessage());
+                        logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
                     }
                 }
                 profileRepository.deleteAllProfilesInBulk();
@@ -283,7 +289,7 @@ public class OneDriveService {
             }
         } catch (IOException | CsvValidationException ex) {
             logger.error("Error2 in '" + filename + "': " + ex.getMessage(), ex);
-            logMessage("Error in '" + filename + "': " + ex.getMessage());
+            logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
 
@@ -320,7 +326,7 @@ public class OneDriveService {
                         inventories.add(inventory);
 
                     } catch (NumberFormatException ex) {
-                        logMessage("Error in '" + filename + "': " + ex.getMessage());
+                        logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
                     }
                 }
                 inventoryRepository.deleteAllInventoriesInBulk();
@@ -329,7 +335,7 @@ public class OneDriveService {
 
         } catch (IOException | CsvValidationException ex) {
             logger.error("Error2 in '" + filename + "': " + ex.getMessage(), ex);
-            logMessage("Error in '" + filename + "': " + ex.getMessage());
+            logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
         }
     }
 
@@ -350,33 +356,21 @@ public class OneDriveService {
         entityManager.clear();
     }
 
-    private synchronized void logMessage(String message) {
+    private synchronized void logErrorMessage(String message) {
 
-        logger.error("Entering logMessage: " + message);
+        logger.error("Entering logErrorMessage: " + message);
 
         final String filename = oneDriveFolderName + "/" + "Errors.log";
 
         try (InputStream inputStream = getFileContent(filename)) {
 
-            String logMessages = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            String logErrorMessages = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 
-            logMessages = LocalDateTime.now().format(formatter) + ": " + message + System.lineSeparator() + logMessages;
+            logErrorMessages = LocalDateTime.now().format(formatter) + ": " + message + System.lineSeparator() + logErrorMessages;
 
-            uploadFile(filename, logMessages);
-
-        } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
-        }
-    }
-
-    @Scheduled(cron = "0 */2 * * * ?")
-    protected void test() {
-        logger.info("Entering test");
-        final String filename = oneDriveFolderName + "/" + "ReadMe.txt";
-        try (InputStream inputStream = getFileContent(filename)) {
-            logger.info("Got input stream");
+            uploadFile(filename, logErrorMessages);
 
         } catch (IOException ex) {
             logger.error(ex.getMessage(), ex);

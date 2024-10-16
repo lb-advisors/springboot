@@ -179,6 +179,17 @@
 			<artifactId>httpclient5</artifactId>
 			<version>5.4</version>
 		</dependency>
+
+		<!-- Retry -->
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
