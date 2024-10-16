@@ -123,8 +123,6 @@ public class OneDriveService {
     @Retryable(include = { Exception.class }, maxAttempts = 5, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     public InputStream getFileContent(String filePath) throws IOException, ClientProtocolException {
 
-        logger.info("getFileContent: " + filePath);
-
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
 
         String accessToken = getAccessToken();
@@ -156,8 +154,6 @@ public class OneDriveService {
     @Retryable(include = { Exception.class }, maxAttempts = 5, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     public void uploadFile(String filePath, String fileContent) throws IOException {
 
-        logger.info("uploadFile: " + filePath);
-
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
 
         String accessToken = getAccessToken(); // Get the access token
@@ -187,7 +183,7 @@ public class OneDriveService {
 
     public synchronized void logErrorMessage(String message) {
 
-        logger.error("Entering logErrorMessage: " + message);
+        logger.error(message);
 
         final String filename = oneDriveFolderName + "/" + "Errors.log";
 
