@@ -3,8 +3,11 @@ package com.lbadvisors.pffc.controllers.jobs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lbadvisors.pffc.controllers.inventory.Inventory;
 import com.lbadvisors.pffc.controllers.inventory.InventoryRepository;
 import com.lbadvisors.pffc.controllers.orders.OrderRepository;
+import com.lbadvisors.pffc.controllers.orders.Order;
 import com.lbadvisors.pffc.controllers.profiles.Profile;
 import com.lbadvisors.pffc.controllers.profiles.ProfileRepository;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
 import jakarta.persistence.EntityManager;
@@ -47,6 +52,44 @@ public class ScheduledJobs {
 
     public ScheduledJobs(@Value("${onedrive.folder.name}") String oneDriveFolderName) {
         this.oneDriveFolderName = oneDriveFolderName;
+    }
+
+    @Scheduled(cron = "0 */5 * * * ?")
+    protected void updateOrderFile() {
+
+        final String filename = oneDriveFolderName + "/" + "Orders.csv";
+
+        LocalDateTime twoMonthsAgo = LocalDateTime.now().minus(2, ChronoUnit.MONTHS);
+        List<Order> orders = orderRepository.findByCreatedAtAfter(twoMonthsAgo);
+
+        // Define header
+        String[] header = { "id", "customer_name", "sales_rep_name", "profile_description", "unit_type", "pack_size", "price", "quantity", "total_price", "delivery_date",
+                "customer_id", "customer_email", "sales_rep_phone", "order_id", "customer_po", "profile_id", "profile_did", "ship_to_id", "ship_to_name", "created_by",
+                "created_at", "last_updated_by", "last_updated_at" };
+
+        StringWriter writer = new StringWriter();
+
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+
+            csvWriter.writeNext(header);
+
+            // Write user data to CSV
+            for (Order order : orders) {
+                String[] data = { String.valueOf(order.getId()), order.getCustomerName(), order.getSalesRepName(), order.getProfileDescription(), order.getUnitType(),
+                        String.valueOf(order.getPackSize()), String.valueOf(order.getPrice()), String.valueOf(order.getQuantity()), String.valueOf(order.getTotalPrice()),
+                        String.valueOf(order.getDeliveryDate()), String.valueOf(order.getCustomerId()), order.getCustomerEmail(), order.getSalesRepPhone(),
+                        String.valueOf(order.getOrderId()), order.getCustomerPo(), String.valueOf(order.getProfileDid()), String.valueOf(order.getShipToId()),
+                        order.getShipToName(), order.getShipToName(), order.getCreatedBy(), String.valueOf(order.getCreatedAt()), order.getLastUpdatedBy(),
+                        String.valueOf(order.getLastUpdatedAt()) };
+                csvWriter.writeNext(data);
+
+            }
+
+            oneDriveService.uploadFile(filename, writer.toString());
+
+        } catch (IOException ex) {
+            oneDriveService.logErrorMessage("Error in '" + filename + "': " + ex.getMessage());
+        }
     }
 
     @Scheduled(cron = "0 */5 * * * ?")
