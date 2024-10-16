@@ -74,7 +74,7 @@ public class OneDriveService {
         this.oneDriveFolderName = oneDriveFolderName;
     }
 
-    @Retryable(include = { Exception.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
+    @Retryable(include = { Exception.class }, maxAttempts = 5, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     private String getAccessToken() throws IOException {
         HttpPost post = new HttpPost(oneDriveTokenUrl);
 
@@ -120,10 +120,10 @@ public class OneDriveService {
         throw new IOException("Graph API Error - Code: " + errorCode + " - Message: " + errorMessage);
     }
 
-    @Retryable(include = { Exception.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
+    @Retryable(include = { Exception.class }, maxAttempts = 5, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     public InputStream getFileContent(String filePath) throws IOException, ClientProtocolException {
 
-        logger.info("getFileContent");
+        logger.info("getFileContent: " + filePath);
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
 
@@ -153,8 +153,10 @@ public class OneDriveService {
      * @param fileContent The content to be written to the file
      * @throws IOException If an error occurs during file upload
      */
-    @Retryable(include = { Exception.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
+    @Retryable(include = { Exception.class }, maxAttempts = 5, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     public void uploadFile(String filePath, String fileContent) throws IOException {
+
+        logger.info("uploadFile: " + filePath);
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
 
@@ -181,7 +183,6 @@ public class OneDriveService {
                 handleGraphApiError(responseBody);
             }
         }
-
     }
 
     public synchronized void logErrorMessage(String message) {
