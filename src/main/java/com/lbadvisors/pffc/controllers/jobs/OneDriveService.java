@@ -96,17 +96,17 @@ public class OneDriveService {
         urlParameters.add(new BasicNameValuePair("scope", SCOPE));
 
         post.setEntity(new UrlEncodedFormEntity(urlParameters));
-        CloseableHttpResponse response = httpClient.execute(post);
+        try (CloseableHttpResponse response = httpClient.execute(post)) {
 
-        // Check response status
-        if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
-            throw new IOException("Cannot retrieve authentication token");
+            // Check response status
+            if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
+                throw new IOException("Cannot retrieve authentication token");
+            }
+
+            String jsonResponse = EntityUtils.toString(response.getEntity());
+            JsonNode tokenNode = new ObjectMapper().readTree(jsonResponse);
+            return tokenNode.get("access_token").asText();
         }
-
-        String jsonResponse = EntityUtils.toString(response.getEntity());
-        JsonNode tokenNode = new ObjectMapper().readTree(jsonResponse);
-        return tokenNode.get("access_token").asText();
-        // }
     }
 
     // Handle and parse the error response from Microsoft Graph API
@@ -141,16 +141,16 @@ public class OneDriveService {
         HttpGet request = new HttpGet(fileDownloadUrl);
         request.addHeader("Authorization", "Bearer " + accessToken);
 
-        CloseableHttpResponse response = httpClient.execute(request);
+        try (CloseableHttpResponse response = httpClient.execute(request)) {
 
-        // Check response status
-        if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
-            // If an error occurs, parse the response to get error code and message
-            String responseBody = EntityUtils.toString(response.getEntity());
-            handleGraphApiError(responseBody);
+            // Check response status
+            if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
+                // If an error occurs, parse the response to get error code and message
+                String responseBody = EntityUtils.toString(response.getEntity());
+                handleGraphApiError(responseBody);
+            }
+            return response.getEntity().getContent();
         }
-        return response.getEntity().getContent();
-        // }
     }
 
     /**
@@ -181,14 +181,15 @@ public class OneDriveService {
         httpPut.setEntity(entity);
 
         // Execute the request
-        CloseableHttpResponse response = httpClient.execute(httpPut);
+        try (CloseableHttpResponse response = httpClient.execute(httpPut)) {
 
-        // Check response status
-        if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
-            String responseBody = EntityUtils.toString(response.getEntity());
-            handleGraphApiError(responseBody);
+            // Check response status
+            if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
+                String responseBody = EntityUtils.toString(response.getEntity());
+                handleGraphApiError(responseBody);
+            }
         }
-        // }
+
     }
 
     @Scheduled(cron = "0 */5 * * * ?")
