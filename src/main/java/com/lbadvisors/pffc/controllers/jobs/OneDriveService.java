@@ -86,7 +86,7 @@ public class OneDriveService {
         this.oneDriveFolderName = oneDriveFolderName;
     }
 
-    @Retryable(retryFor = { Exception.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
+    @Retryable(retryFor = { Exception.class, java.net.SocketException.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     private String getAccessToken() throws IOException {
         HttpPost post = new HttpPost(oneDriveTokenUrl);
 
@@ -132,7 +132,7 @@ public class OneDriveService {
         throw new IOException("Graph API Error - Code: " + errorCode + " - Message: " + errorMessage);
     }
 
-    @Retryable(retryFor = { Exception.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
+    @Retryable(retryFor = { Exception.class, java.net.SocketException.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     private InputStream getFileContent(String filePath) throws IOException, ClientProtocolException {
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
@@ -163,7 +163,7 @@ public class OneDriveService {
      * @param fileContent The content to be written to the file
      * @throws IOException If an error occurs during file upload
      */
-    @Retryable(retryFor = { Exception.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
+    @Retryable(retryFor = { Exception.class, java.net.SocketException.class }, maxAttempts = 3, backoff = @Backoff(delay = 3000, maxDelay = 20000, random = true))
     private void uploadFile(String filePath, String fileContent) throws IOException {
 
         String encodedFilePath = URLEncoder.encode(filePath, "UTF-8").replaceAll("\\+", "%20");
@@ -358,6 +358,10 @@ public class OneDriveService {
 
     private synchronized void logErrorMessage(String message) {
 
+        if (0 == 0) {
+            return;
+        }
+
         logger.error("Entering logErrorMessage: " + message);
 
         final String filename = oneDriveFolderName + "/" + "Errors.log";
@@ -373,6 +377,7 @@ public class OneDriveService {
             uploadFile(filename, logErrorMessages);
 
         } catch (IOException ex) {
+            // logger.error(ex.getMessage(), ex);
             logger.error(ex.getMessage(), ex);
         }
     }
