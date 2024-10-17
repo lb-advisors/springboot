@@ -55,7 +55,7 @@ public class ScheduledJobs {
     }
 
     @Scheduled(cron = "0 */2 * * * ?")
-    protected void updateOrderFile() {
+    public void updateOrderFile() {
 
         final String filename = oneDriveFolderName + "/" + "Orders.csv";
 
@@ -64,8 +64,8 @@ public class ScheduledJobs {
 
         // Define header
         String[] header = { "id", "customer_name", "sales_rep_name", "profile_description", "unit_type", "pack_size", "price", "quantity", "total_price", "delivery_date",
-                "customer_id", "customer_email", "sales_rep_phone", "order_id", "customer_po", "profile_id", "profile_did", "ship_to_id", "ship_to_name", "created_by",
-                "created_at", "last_updated_by", "last_updated_at" };
+                "customer_id", "customer_email", "sales_rep_phone", "order_id", "customer_po", "profile_id", "profile_did", "ship_to_id", "ship_to_name", "company_id",
+                "created_by", "created_at", "last_updated_by", "last_updated_at" };
 
         StringWriter writer = new StringWriter();
 
@@ -75,14 +75,18 @@ public class ScheduledJobs {
 
             // Write user data to CSV
             for (Order order : orders) {
-                String[] data = { String.valueOf(order.getId()), order.getCustomerName(), order.getSalesRepName(), order.getProfileDescription(), order.getUnitType(),
-                        String.valueOf(order.getPackSize()), String.valueOf(order.getPrice()), String.valueOf(order.getQuantity()), String.valueOf(order.getTotalPrice()),
-                        String.valueOf(order.getDeliveryDate()), String.valueOf(order.getCustomerId()), order.getCustomerEmail(), order.getSalesRepPhone(),
-                        String.valueOf(order.getOrderId()), order.getCustomerPo(), String.valueOf(order.getProfileDid()), String.valueOf(order.getShipToId()),
-                        order.getShipToName(), order.getShipToName(), order.getCreatedBy(), String.valueOf(order.getCreatedAt()), order.getLastUpdatedBy(),
-                        String.valueOf(order.getLastUpdatedAt()) };
+                String[] data = { (order.getId() != null) ? String.valueOf(order.getId()) : null, order.getCustomerName(), order.getSalesRepName(), order.getProfileDescription(),
+                        order.getUnitType(), (order.getPackSize() != null) ? String.valueOf(order.getPackSize()) : null,
+                        (order.getPrice() != null) ? String.valueOf(order.getPrice()) : null, (order.getQuantity() != null) ? String.valueOf(order.getQuantity()) : null,
+                        (order.getTotalPrice() != null) ? String.valueOf(order.getTotalPrice()) : null,
+                        (order.getDeliveryDate() != null) ? String.valueOf(order.getDeliveryDate()) : null,
+                        (order.getCustomerId() != null) ? String.valueOf(order.getCustomerId()) : null, order.getCustomerEmail(), order.getSalesRepPhone(),
+                        String.valueOf(order.getOrderId()), order.getCustomerPo(), (order.getProfileId() != null) ? String.valueOf(order.getProfileId()) : null,
+                        (order.getProfileDid() != null) ? String.valueOf(order.getProfileDid()) : null, (order.getShipToId() != null) ? String.valueOf(order.getShipToId()) : null,
+                        order.getShipToName(), (order.getCompanyId() != null) ? String.valueOf(order.getCompanyId()) : null, order.getCreatedBy(),
+                        (order.getCreatedAt() != null) ? String.valueOf(order.getCreatedAt()) : null, order.getLastUpdatedBy(),
+                        (order.getLastUpdatedAt() != null) ? String.valueOf(order.getLastUpdatedAt()) : null };
                 csvWriter.writeNext(data);
-
             }
 
             oneDriveService.uploadFile(filename, writer.toString());

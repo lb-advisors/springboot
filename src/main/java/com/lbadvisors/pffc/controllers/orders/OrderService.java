@@ -74,6 +74,7 @@ public class OrderService {
             order.setCustomerId(orderPostDto.getCustomerId());
             order.setDeliveryDate(orderPostDto.getDeliveryDate());
             order.setShipToId(orderPostDto.getShipToId());
+            order.setCompanyId(profileGetDto.getCompanyId());
             order.setCustomerPo(orderPostDto.getCustomerPo());
             order.setTotalPrice(orderPostDto.getTotalPrice());
             order.setCustomerName(profileGetDto.getCustomerName());
