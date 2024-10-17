@@ -60,6 +60,8 @@ public class Order {
     private Integer shipToId;
     private String shipToName;
 
+    private Integer companyId;
+
     @CreatedBy
     private String createdBy;
 
