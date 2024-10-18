@@ -85,5 +85,5 @@ jobs:
       - name: Deploy to Render
         uses: fjogeleit/http-request-action@v1
         with:
-          url: ${{ secrets.RENDER_TRIGGER_URL }}
+          url: ${{ secrets.RENDER_UAT_TRIGGER_URL }}
           method: "GET"
