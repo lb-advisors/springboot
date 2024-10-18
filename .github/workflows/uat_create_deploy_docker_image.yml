@@ -20,6 +20,14 @@ jobs:
       packages: write
 
     steps:
+      - name: Check Branch
+        id: check_branch
+        run: |
+          if [[ "${{ github.ref }}" != "refs/heads/develop" ]]; then
+            echo "Error: This workflow can only be triggered from the develop branch."
+            exit 1  # Exit with an error if the branch is not develop
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
