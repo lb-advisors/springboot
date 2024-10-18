@@ -41,21 +41,24 @@ jobs:
 
       - name: Get commit message
         id: commit_message
-        run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
+        #run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
+        run: echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 
       - name: Get commit hash
         id: commit_hash
-        run: echo "::set-output name=hash::$(git log -1 --pretty=%H)"
+        #run: echo "::set-output name=hash::$(git log -1 --pretty=%H)"
+        run: echo "hash=$(git log -1 --pretty=%H)" >> $GITHUB_OUTPUT
 
       - name: Get current time
         id: build_time
-        run: echo "::set-output name=time::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+        #run: echo "::set-output name=time::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+        run: echo "time=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
 
       - name: Build the Docker image
         run: docker build --file Dockerfile --tag ghcr.io/lb-advisors/springboot-prod:latest --build-arg COMMIT_MESSAGE="${{ steps.commit_message.outputs.message }}" --build-arg COMMIT_HASH="${{ steps.commit_hash.outputs.hash }}" --build-arg BUILD_TIME="${{ steps.build_time.outputs.time }}" .
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ secrets.DOCKER_USERNAME }}
