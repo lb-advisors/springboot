@@ -23,13 +23,7 @@ jobs:
       - name: Check Branch
         id: check_branch
         run: |
-          echo "Selected branch: '${{ github.event.inputs.branch }}'"
-          echo "Selected branch ref: '${{ github.ref }}'"
-
-          exit 1
-
-
-          if [[ -n "${{ github.event.inputs.branch }}"  && "${{ github.event.inputs.branch }}" != "develop" ]]; then
+          if [[ "${{ github.ref }}" != "refs/heads/develop" ]]; then
           echo "Error: This workflow can only be triggered for the develop branch."
           exit 1
           fi
