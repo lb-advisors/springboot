@@ -23,9 +23,9 @@ jobs:
       - name: Check Branch
         id: check_branch
         run: |
-          if [[ "${{ github.event.inputs.branch }}" != "develop" ]]; then
-            echo "Error: This workflow can only be triggered for the develop branch."
-            exit 1
+          if [[ "${{ github.event.inputs.branch }}" != "" && "${{ github.event.inputs.branch }}" != "develop" ]]; then
+          echo "Error: This workflow can only be triggered for the develop branch."
+          exit 1
           fi
 
       - name: Checkout repository
