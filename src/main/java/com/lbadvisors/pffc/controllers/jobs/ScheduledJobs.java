@@ -96,7 +96,7 @@ public class ScheduledJobs {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "40 */5 * * * ?")
     @Transactional
     protected void refreshProfileTableFromCsv() {
 
@@ -157,7 +157,7 @@ public class ScheduledJobs {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "20 */5 * * * ?")
     @Transactional
     protected void refreshInventoryTableFromCsv() {
 
